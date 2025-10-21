@@ -258,15 +258,15 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
   <script>
-     const firebaseConfig = {
-  apiKey: "AIzaSyBguc6hR-XInXhzUtfKWq9GtT7AmZSjCoo",
-  authDomain: "irigasi-tetes-v1-dd986.firebaseapp.com",
-  databaseURL: "https://irigasi-tetes-v1-dd986-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "irigasi-tetes-v1-dd986",
-  storageBucket: "irigasi-tetes-v1-dd986.firebasestorage.app",
-  messagingSenderId: "216885769539",
-  appId: "1:216885769539:web:4c8a3b6902b20ed53dabf6"
-  };
+    const firebaseConfig = {
+  	apiKey: "AIzaSyBguc6hR-XInXhzUtfKWq9GtT7AmZSjCoo",
+  	authDomain: "irigasi-tetes-v1-dd986.firebaseapp.com",
+  	databaseURL: "https://irigasi-tetes-v1-dd986-default-rtdb.asia-southeast1.firebasedatabase.app",
+  	projectId: "irigasi-tetes-v1-dd986",
+  	storageBucket: "irigasi-tetes-v1-dd986.firebasestorage.app",
+  	messagingSenderId: "216885769539",
+  	appId: "1:216885769539:web:4c8a3b6902b20ed53dabf6"
+   };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -320,7 +320,7 @@
         plugins:[{id:'textCenter',afterDraw:c=>{
           const{ctx,chartArea:{width,height,left,top}}=c;ctx.save();
           ctx.font='bold 20px Poppins';ctx.textAlign='center';ctx.textBaseline='middle';
-          ctx.fillStyle='#fff';ctx.fillText(${Math.round(val)}%,width/2+left,height/2+top);
+          ctx.fillStyle='#fff';ctx.fillText(`${Math.round(val)}%`,width/2+left,height/2+top);
           ctx.restore();}}]});
     }
 
@@ -335,11 +335,11 @@
     function loadData(){
       db.ref("SensorData").on("value",s=>{
         const d=s.val();if(!d)return;
-        temp.innerText=${d.temperature} °C;
-        hum.innerText=${d.humidity} %;
+        temp.innerText=`${d.temperature} °C`;
+        hum.innerText=`${d.humidity} %`;
         const soils=[d.soil1,d.soil2,d.soil3,d.soil4];
         const avg=Math.round(soils.reduce((a,b)=>a+b)/4);
-        soils.forEach((v,i)=>!gauges[soil${i+1}]?createGauge(soil${i+1},v):updateGauge(soil${i+1},v));
+        soils.forEach((v,i)=>!gauges[`soil${i+1}`]?createGauge(`soil${i+1}`,v):updateGauge(`soil${i+1}`,v));
         !gauges.avgSoil?createGauge("avgSoil",avg,true):updateGauge("avgSoil",avg);
 
         pumpStatus.innerText=d.pump?"ON":"OFF";
@@ -370,7 +370,5 @@
     modeBtn.onclick=()=>{const r=db.ref("SensorData/mode");r.get().then(s=>r.set(s.val()==="AUTO"?"MANUAL":"AUTO"));};
   </script>
 </body>
-</html>
-
-
+</html> bagaimana agartampilan pada  layar laptopposisi semua card containerberadalam satu layarnamun ketika dibuka mengggunakan hp urutan akan sepertikode htmldi atas
 
