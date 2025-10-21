@@ -8,44 +8,74 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* =======================================================
-       🌿 Tampilan Final dengan Login & Dashboard
-       ======================================================= */
+    :root {
+      --bg1: #e8f5e9;
+      --bg2: #e3f2fd;
+      --card: #ffffff;
+      --text: #333;
+      --label: #1b5e20;
+      --shadow: rgba(0,0,0,0.15);
+      --btn-text: #fff;
+    }
+    [data-theme="dark"] {
+      --bg1: #0d1117;
+      --bg2: #1a1f25;
+      --card: #161b22;
+      --text: #eaeaea;
+      --label: #90ee90;
+      --shadow: rgba(255,255,255,0.1);
+      --btn-text: #fff;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(180deg, #e8f5e9, #e3f2fd);
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
       margin: 0;
       padding: 0;
       text-align: center;
-      color: #333;
-      transition: background-color 0.5s ease, color 0.5s ease;
+      color: var(--text);
+      transition: background 0.4s, color 0.4s;
     }
 
     h1 {
       font-size: clamp(22px, 3vw, 28px);
       margin-top: 20px;
-      color: #1b5e20;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+      color: var(--label);
+      text-shadow: 1px 1px 3px var(--shadow);
     }
 
-    /* FORM LOGIN */
+    /* Toggle tema */
+    #themeToggle {
+      position: fixed;
+      top: 15px;
+      right: 20px;
+      font-size: 22px;
+      cursor: pointer;
+      background: var(--card);
+      border-radius: 50%;
+      padding: 10px;
+      box-shadow: 0 2px 8px var(--shadow);
+      transition: transform 0.3s, background 0.3s;
+    }
+    #themeToggle:hover { transform: scale(1.1); }
+
+    /* LOGIN */
     #loginForm {
       max-width: 90%;
       width: 360px;
       margin: 80px auto;
-      background: #fff;
+      background: var(--card);
       padding: 25px 20px;
       border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 12px var(--shadow);
       text-align: left;
-      transition: opacity 0.6s ease;
+      transition: background 0.4s;
     }
     #loginForm h2 {
       text-align: center;
-      color: #333;
+      color: var(--text);
       font-size: 20px;
     }
-
     .input-group {
       position: relative;
       margin: 15px 0;
@@ -63,17 +93,19 @@
       border-radius: 10px;
       font-size: 1rem;
       box-sizing: border-box;
+      background: var(--bg2);
+      color: var(--text);
     }
     #loginForm button {
       width: 100%;
       background-color: #0078d7;
-      color: white;
+      color: var(--btn-text);
       padding: 12px;
       font-size: 17px;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      transition: background 0.5s ease;
+      transition: background 0.4s ease;
     }
     #loginForm button:hover {
       background-color: #005bb5;
@@ -84,7 +116,7 @@
       display: none;
       opacity: 0;
       transform: scale(0.97);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transition: opacity 0.5s ease, transform 0.5s ease;
     }
     #dashboard.show {
       display: block;
@@ -109,9 +141,9 @@
     }
 
     .card {
-      background: #ffffff;
+      background: var(--card);
       border-radius: 18px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 15px var(--shadow);
       padding: 15px;
       width: 140px;
       height: 160px;
@@ -119,7 +151,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      transition: background 0.5s ease, color 0.5s ease;
+      transition: background 0.4s;
     }
 
     .card.small {
@@ -132,10 +164,11 @@
     .big-gauge {
       width: 260px;
       height: 260px;
-      background: #ffffff;
+      background: var(--card);
       border-radius: 20px;
       padding: 25px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 15px var(--shadow);
+      transition: background 0.4s;
     }
 
     .footer-btns {
@@ -151,13 +184,13 @@
       border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
-      color: white;
+      color: var(--btn-text);
       font-size: 14px;
       transition: all 0.4s ease;
     }
     .footer-btns button:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+      box-shadow: 0 6px 14px var(--shadow);
     }
 
     .green { background-color: #28a745; }
@@ -168,12 +201,11 @@
 
     footer {
       font-size: 0.85rem;
-      color: #666;
+      color: var(--text);
       margin-top: 20px;
       padding-bottom: 25px;
     }
 
-    /* Responsif */
     @media (max-width: 900px) {
       .row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 95%; justify-items: center; }
       .card { width: 90%; max-width: 180px; height: 160px; }
@@ -184,23 +216,14 @@
       h1 { font-size: 20px; }
       .footer-btns button { width: 95%; max-width: 200px; }
     }
-
-    /* Dark Mode */
-    @media (prefers-color-scheme: dark) {
-      body { background: linear-gradient(180deg, #0b0b0b, #1a1a1a); color: #eee; }
-      h1 { color: #b3ffb3; text-shadow: none; }
-      #loginForm { background: #1e1e1e; box-shadow: 0 4px 12px rgba(255,255,255,0.08); }
-      #loginForm input { background: #2a2a2a; color: #f5f5f5; border-color: #555; }
-      .card, .big-gauge { background: #1c1c1c; color: #f5f5f5; }
-      footer { color: #aaa; }
-    }
   </style>
 </head>
 
 <body>
+  <div id="themeToggle" title="Ubah tema">🌙</div>
   <h1>🌱 SISTEM IRIGASI TETES 💧</h1>
 
-  <!-- FORM LOGIN -->
+  <!-- LOGIN -->
   <div id="loginForm">
     <h2><i class="fa-solid fa-lock"></i> Login Akses</h2>
     <div class="input-group">
@@ -250,7 +273,7 @@
     </div>
   </div>
 
-  <footer>© Sistem Irigasi Tetes Otomatis 2025 | muchtar umar</footer>
+  <footer>© Sistem Irigasi Tetes Otomatis 2025 | Muchtar Umar</footer>
 
   <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
@@ -258,36 +281,34 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
   <script>
+    // === FIREBASE CONFIG ===
     const firebaseConfig = {
-  	apiKey: "AIzaSyBguc6hR-XInXhzUtfKWq9GtT7AmZSjCoo",
-  	authDomain: "irigasi-tetes-v1-dd986.firebaseapp.com",
-  	databaseURL: "https://irigasi-tetes-v1-dd986-default-rtdb.asia-southeast1.firebasedatabase.app",
-  	projectId: "irigasi-tetes-v1-dd986",
-  	storageBucket: "irigasi-tetes-v1-dd986.firebasestorage.app",
-  	messagingSenderId: "216885769539",
-  	appId: "1:216885769539:web:4c8a3b6902b20ed53dabf6"
-   };
-
+      apiKey: "AIzaSyBguc6hR-XInXhzUtfKWq9GtT7AmZSjCoo",
+      authDomain: "irigasi-tetes-v1-dd986.firebaseapp.com",
+      databaseURL: "https://irigasi-tetes-v1-dd986-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "irigasi-tetes-v1-dd986",
+      storageBucket: "irigasi-tetes-v1-dd986.firebasestorage.app",
+      messagingSenderId: "216885769539",
+      appId: "1:216885769539:web:4c8a3b6902b20ed53dabf6"
+    };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // Login
+    // === LOGIN ===
     const emailEl = document.getElementById("email");
     const passEl = document.getElementById("password");
     const loginBtn = document.getElementById("loginBtn");
-
     loginBtn.addEventListener("click", async () => {
       const email = emailEl.value.trim();
       const pass = passEl.value.trim();
-      if (!email || !pass) return alert("Masukkan email dan password terlebih dahulu!");
+      if (!email || !pass) return alert("Masukkan email dan password!");
       try {
         await auth.signInWithEmailAndPassword(email, pass);
       } catch (e) {
         alert("Login gagal: " + e.message);
       }
     });
-
     auth.onAuthStateChanged(user => {
       if (user) showDashboard();
       else showLogin();
@@ -298,19 +319,16 @@
       dashboard.classList.add("show");
       loadData();
     }
-
     function showLogin() {
       dashboard.classList.remove("show");
       loginForm.style.display = "block";
     }
-
     document.getElementById("logoutBtn").onclick = () => auth.signOut();
 
-    // Gauges
+    // === GAUGES ===
     const gauges = {};
     const getColor = v => v > 70 ? "#4caf50" : v > 40 ? "#ffc107" : "#f44336";
-
-    function createGauge(id, val, full=false){
+    function createGauge(id,val,full=false){
       const ctx=document.getElementById(id).getContext('2d');
       gauges[id]=new Chart(ctx,{
         type:'doughnut',
@@ -321,9 +339,8 @@
           const{ctx,chartArea:{width,height,left,top}}=c;ctx.save();
           ctx.font='bold 20px Poppins';ctx.textAlign='center';ctx.textBaseline='middle';
           ctx.fillStyle='#fff';ctx.fillText(`${Math.round(val)}%`,width/2+left,height/2+top);
-          ctx.restore();}}]});
+          ctx.restore();}}]}]);
     }
-
     function updateGauge(id,val){
       const c=gauges[id];if(!c)return;
       c.data.datasets[0].data=[val,100-val];
@@ -331,7 +348,7 @@
       c.update();
     }
 
-    // Load Data
+    // === LOAD DATA ===
     function loadData(){
       db.ref("SensorData").on("value",s=>{
         const d=s.val();if(!d)return;
@@ -345,16 +362,28 @@
         modeStatus.innerText=d.mode;
         if(d.pump){pumpBtn.className="green";pumpBtn.innerText="Pompa: ON";}
         else{pumpBtn.className="gray";pumpBtn.innerText="Pompa: OFF";}
-        if(d.mode==="AUTO"){modeBtn.className="orange";pumpBtn.disabled=true;pumpBtn.classList.add("locked");}
-        else{modeBtn.className="blue";pumpBtn.disabled=false;pumpBtn.classList.remove("locked");}
+        if(d.mode==="AUTO"){modeBtn.className="orange";modeBtn.innerText="Mode: AUTO";pumpBtn.disabled=true;pumpBtn.classList.add("locked");}
+        else{modeBtn.className="blue";modeBtn.innerText="Mode: MANUAL";pumpBtn.disabled=false;pumpBtn.classList.remove("locked");}
       });
     }
 
     const pumpBtn=document.getElementById("pumpBtn");
     const modeBtn=document.getElementById("modeBtn");
-
     pumpBtn.onclick=()=>{const r=db.ref("SensorData/pump");r.get().then(s=>r.set(s.val()?0:1));};
     modeBtn.onclick=()=>{const r=db.ref("SensorData/mode");r.get().then(s=>r.set(s.val()==="AUTO"?"MANUAL":"AUTO"));};
+
+    // === THEME TOGGLE ===
+    const themeToggle=document.getElementById("themeToggle");
+    const savedTheme=localStorage.getItem("theme")||"light";
+    document.documentElement.setAttribute("data-theme",savedTheme);
+    themeToggle.textContent=savedTheme==="dark"?"☀️":"🌙";
+    themeToggle.onclick=()=>{
+      const current=document.documentElement.getAttribute("data-theme");
+      const next=current==="dark"?"light":"dark";
+      document.documentElement.setAttribute("data-theme",next);
+      localStorage.setItem("theme",next);
+      themeToggle.textContent=next==="dark"?"☀️":"🌙";
+    };
   </script>
 </body>
 </html>
