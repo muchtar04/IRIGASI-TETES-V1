@@ -92,20 +92,20 @@
       transform: scale(1);
     }
 
+    /* ===== GRID RESPONSIF ===== */
     .main-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 20px;
-      padding: 0 10px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap: 25px;
+      justify-items: center;
+      align-items: start;
+      margin: 30px auto;
+      width: 90%;
+      max-width: 1200px;
     }
 
     .row {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 25px;
-      margin: 20px 0;
+      display: contents; /* agar semua .card ikut grid parent */
     }
 
     .card {
@@ -113,7 +113,8 @@
       border-radius: 18px;
       box-shadow: 0 6px 15px rgba(0,0,0,0.08);
       padding: 15px;
-      width: 140px;
+      width: 100%;
+      max-width: 220px;
       height: 160px;
       text-align: center;
       display: flex;
@@ -123,19 +124,21 @@
     }
 
     .card.small {
-      width: 130px;
       height: 80px;
     }
 
     canvas { width: 100%; height: 120px; }
 
     .big-gauge {
-      width: 260px;
+      grid-column: span 3;
+      width: 100%;
+      max-width: 260px;
       height: 260px;
       background: #ffffff;
       border-radius: 20px;
       padding: 25px;
       box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+      justify-self: center;
     }
 
     .footer-btns {
@@ -173,14 +176,24 @@
       padding-bottom: 25px;
     }
 
-    /* Responsif */
+    /* Responsif untuk HP */
     @media (max-width: 900px) {
-      .row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 95%; justify-items: center; }
-      .card { width: 90%; max-width: 180px; height: 160px; }
-      .big-gauge { width: 220px; height: 220px; }
+      .main-container {
+        grid-template-columns: repeat(2, 1fr);
+        width: 95%;
+      }
+      .big-gauge {
+        grid-column: span 2;
+      }
     }
 
     @media (max-width: 500px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+      .big-gauge {
+        grid-column: span 1;
+      }
       h1 { font-size: 20px; }
       .footer-btns button { width: 95%; max-width: 200px; }
     }
@@ -259,14 +272,14 @@
 
   <script>
     const firebaseConfig = {
-  	apiKey: "AIzaSyBguc6hR-XInXhzUtfKWq9GtT7AmZSjCoo",
-  	authDomain: "irigasi-tetes-v1-dd986.firebaseapp.com",
-  	databaseURL: "https://irigasi-tetes-v1-dd986-default-rtdb.asia-southeast1.firebasedatabase.app",
-  	projectId: "irigasi-tetes-v1-dd986",
-  	storageBucket: "irigasi-tetes-v1-dd986.firebasestorage.app",
-  	messagingSenderId: "216885769539",
-  	appId: "1:216885769539:web:4c8a3b6902b20ed53dabf6"
-   };
+      apiKey: "AIzaSyBguc6hR-XInXhzUtfKWq9GtT7AmZSjCoo",
+      authDomain: "irigasi-tetes-v1-dd986.firebaseapp.com",
+      databaseURL: "https://irigasi-tetes-v1-dd986-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "irigasi-tetes-v1-dd986",
+      storageBucket: "irigasi-tetes-v1-dd986.firebasestorage.app",
+      messagingSenderId: "216885769539",
+      appId: "1:216885769539:web:4c8a3b6902b20ed53dabf6"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -321,7 +334,7 @@
           const{ctx,chartArea:{width,height,left,top}}=c;ctx.save();
           ctx.font='bold 20px Poppins';ctx.textAlign='center';ctx.textBaseline='middle';
           ctx.fillStyle='#fff';ctx.fillText(`${Math.round(val)}%`,width/2+left,height/2+top);
-          ctx.restore();}}]});
+          ctx.restore();}}]}});
     }
 
     function updateGauge(id,val){
@@ -331,7 +344,7 @@
       c.update();
     }
 
-   // Load Data
+    // Load Data
     function loadData(){
       db.ref("SensorData").on("value",s=>{
         const d=s.val();if(!d)return;
@@ -348,7 +361,6 @@
         if(d.pump){pumpBtn.className="green";pumpBtn.innerText="Pompa: ON";}
         else{pumpBtn.className="gray";pumpBtn.innerText="Pompa: OFF";}
 
-        // 🔄 ubah warna & teks tombol mode sesuai status
         if(d.mode==="AUTO"){
           modeBtn.className="orange";
           modeBtn.innerText="Mode: AUTO";
@@ -371,5 +383,3 @@
   </script>
 </body>
 </html>
-
-
