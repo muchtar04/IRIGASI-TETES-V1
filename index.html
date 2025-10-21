@@ -331,7 +331,7 @@
       c.update();
     }
 
-    // Load Data
+   // Load Data
     function loadData(){
       db.ref("SensorData").on("value",s=>{
         const d=s.val();if(!d)return;
@@ -341,9 +341,15 @@
         const avg=Math.round(soils.reduce((a,b)=>a+b)/4);
         soils.forEach((v,i)=>!gauges[`soil${i+1}`]?createGauge(`soil${i+1}`,v):updateGauge(`soil${i+1}`,v));
         !gauges.avgSoil?createGauge("avgSoil",avg,true):updateGauge("avgSoil",avg);
-        pumpStatus.innerText=d.pump?"ON":"OFF";
 
-       if(d.mode==="AUTO"){
+        pumpStatus.innerText=d.pump?"ON":"OFF";
+        modeStatus.innerText=d.mode;
+
+        if(d.pump){pumpBtn.className="green";pumpBtn.innerText="Pompa: ON";}
+        else{pumpBtn.className="gray";pumpBtn.innerText="Pompa: OFF";}
+
+        // 🔄 ubah warna & teks tombol mode sesuai status
+        if(d.mode==="AUTO"){
           modeBtn.className="orange";
           modeBtn.innerText="Mode: AUTO";
           pumpBtn.disabled=true;
@@ -365,3 +371,5 @@
   </script>
 </body>
 </html>
+
+
