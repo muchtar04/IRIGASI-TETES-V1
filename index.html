@@ -8,44 +8,54 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* ======== STYLE UTAMA ======== */
+    /* =======================================================
+       🌿 Tampilan Final dengan Login & Dashboard
+       ======================================================= */
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #f3f7fb;
+      background: linear-gradient(180deg, #e8f5e9, #e3f2fd);
       margin: 0;
       padding: 0;
       text-align: center;
       color: #333;
+      transition: background-color 0.5s ease, color 0.5s ease;
     }
 
-    h1 { font-size: 25px; margin-top: 20px; color: #222; }
-
-    /* Animasi transisi fade umum */
-    .fade-in { animation: fadeIn 0.8s ease forwards; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.97); }
-      to { opacity: 1; transform: scale(1); }
+    h1 {
+      font-size: clamp(22px, 3vw, 28px);
+      margin-top: 20px;
+      color: #1b5e20;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
     }
 
-    /* ===== LOGIN ===== */
+    /* FORM LOGIN */
     #loginForm {
       max-width: 90%;
-      width: 380px;
+      width: 360px;
       margin: 80px auto;
-      background: white;
+      background: #fff;
       padding: 25px 20px;
       border-radius: 15px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       text-align: left;
       transition: opacity 0.6s ease;
     }
+    #loginForm h2 {
+      text-align: center;
+      color: #333;
+      font-size: 20px;
+    }
 
-    #loginForm.fade-out { opacity: 0; pointer-events: none; }
-    #loginForm h2 { text-align: center; color: #333; font-size: 20px; }
-
-    .input-group { position: relative; margin: 15px 0; }
-    .input-group i { position: absolute; top: 12px; left: 12px; color: #888; }
-
+    .input-group {
+      position: relative;
+      margin: 15px 0;
+    }
+    .input-group i {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      color: #888;
+    }
     #loginForm input {
       width: 100%;
       padding: 12px 12px 12px 40px;
@@ -54,29 +64,33 @@
       font-size: 1rem;
       box-sizing: border-box;
     }
-
     #loginForm button {
       width: 100%;
       background-color: #0078d7;
       color: white;
       padding: 12px;
-      font-size: 18px;
+      font-size: 17px;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      transition: background 0.6s ease;
+      transition: background 0.5s ease;
+    }
+    #loginForm button:hover {
+      background-color: #005bb5;
     }
 
-    #loginForm button:hover { background-color: #005bb5; }
-
-    /* ===== DASHBOARD ===== */
+    /* DASHBOARD */
     #dashboard {
       display: none;
       opacity: 0;
       transform: scale(0.97);
       transition: opacity 0.6s ease, transform 0.6s ease;
     }
-    #dashboard.show { display: block; opacity: 1; transform: scale(1); }
+    #dashboard.show {
+      display: block;
+      opacity: 1;
+      transform: scale(1);
+    }
 
     .main-container {
       display: flex;
@@ -94,11 +108,10 @@
       margin: 20px 0;
     }
 
-    /* ===== CARD ===== */
     .card {
       background: #ffffff;
       border-radius: 18px;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.08);
       padding: 15px;
       width: 140px;
       height: 160px;
@@ -106,52 +119,25 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      transition: background-color 0.8s ease, box-shadow 0.4s ease, transform 0.3s ease, color 0.6s ease;
+      transition: background 0.5s ease, color 0.5s ease;
     }
 
     .card.small {
       width: 130px;
       height: 80px;
-      padding: 10px;
-    }
-
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-    }
-
-    .label { font-size: 14px; font-weight: 600; margin-bottom: 6px; transition: color 0.6s ease; }
-
-    .value {
-      font-size: clamp(18px, 4vw, 28px);
-      font-weight: 700;
-      line-height: 1.2;
-      flex-grow: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.6s ease, transform 0.4s ease;
-    }
-
-    .value.updated {
-      transform: scale(1.1);
-      color: #ffcc00;
     }
 
     canvas { width: 100%; height: 120px; }
 
-    /* ===== GAUGE BESAR ===== */
     .big-gauge {
       width: 260px;
       height: 260px;
-      background: white;
+      background: #ffffff;
       border-radius: 20px;
       padding: 25px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-      transition: background-color 0.8s ease;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.08);
     }
 
-    /* ===== TOMBOL FOOTER ===== */
     .footer-btns {
       display: flex;
       justify-content: center;
@@ -159,7 +145,6 @@
       margin: 25px 0 40px;
       flex-wrap: wrap;
     }
-
     .footer-btns button {
       padding: 10px 18px;
       border: none;
@@ -168,312 +153,208 @@
       cursor: pointer;
       color: white;
       font-size: 14px;
-      transition: background-color 0.6s ease, transform 0.3s ease, box-shadow 0.6s ease;
+      transition: all 0.4s ease;
     }
-
     .footer-btns button:hover {
       transform: scale(1.05);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
     }
 
     .green { background-color: #28a745; }
     .orange { background-color: #ff7f0e; }
     .gray { background-color: #555; }
     .blue { background-color: #007bff; }
-
     .locked { opacity: 0.6; cursor: not-allowed; }
 
-    footer { font-size: 0.85rem; color: #666; margin-top: 20px; padding-bottom: 25px; }
+    footer {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 20px;
+      padding-bottom: 25px;
+    }
 
-    /* ======== RESPONSIVE MOBILE (2 per baris tanpa scroll) ======== */
-    @media (max-width: 768px) {
-      .row {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr); /* dua kolom */
-        gap: 15px;
-        width: 95%;
-        justify-items: center;
-      }
+    /* Responsif */
+    @media (max-width: 900px) {
+      .row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 95%; justify-items: center; }
+      .card { width: 90%; max-width: 180px; height: 160px; }
+      .big-gauge { width: 220px; height: 220px; }
+    }
 
-      .card {
-        width: 90% !important;
-        max-width: 180px;
-        height: 160px !important;
-      }
+    @media (max-width: 500px) {
+      h1 { font-size: 20px; }
+      .footer-btns button { width: 95%; max-width: 200px; }
+    }
 
-      .big-gauge {
-        width: 220px !important;
-        height: 220px !important;
-      }
-
-      .gauge {
-        width: 85px !important;
-        height: 110px !important;
-      }
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
+      body { background: linear-gradient(180deg, #0b0b0b, #1a1a1a); color: #eee; }
+      h1 { color: #b3ffb3; text-shadow: none; }
+      #loginForm { background: #1e1e1e; box-shadow: 0 4px 12px rgba(255,255,255,0.08); }
+      #loginForm input { background: #2a2a2a; color: #f5f5f5; border-color: #555; }
+      .card, .big-gauge { background: #1c1c1c; color: #f5f5f5; }
+      footer { color: #aaa; }
     }
   </style>
 </head>
-<body>
-  <h1>🌱 SISTEM IRIGASI TETES💧</h1>
 
-  <!-- ==================== LOGIN FORM ==================== -->
-  <div id="loginForm" class="fade-in">
+<body>
+  <h1>🌱 SISTEM IRIGASI TETES 💧</h1>
+
+  <!-- FORM LOGIN -->
+  <div id="loginForm">
     <h2><i class="fa-solid fa-lock"></i> Login Akses</h2>
     <div class="input-group">
       <i class="fa-solid fa-envelope"></i>
-      <input type="email" id="email" placeholder="Email" required />
+      <input type="email" id="email" placeholder="Email" required>
     </div>
     <div class="input-group">
       <i class="fa-solid fa-key"></i>
-      <input type="password" id="password" placeholder="Password" required />
+      <input type="password" id="password" placeholder="Password" required>
     </div>
     <button id="loginBtn"><i class="fa-solid fa-right-to-bracket"></i> Masuk</button>
   </div>
 
-  <!-- ==================== DASHBOARD ==================== -->
+  <!-- DASHBOARD -->
   <div id="dashboard">
-    <div class="main-container fade-in">
-
-      <!-- Baris Suhu & Kelembaban -->
+    <div class="main-container">
       <div class="row">
-        <div class="card small" id="tempCard"><div class="label">Temperatur</div><div id="temp" class="value">-- °C</div></div>
-        <div class="card small" id="humCard"><div class="label">Kelembaban</div><div id="hum" class="value">-- %</div></div>
+        <div class="card small"><div class="label">Temperatur</div><div id="temp" class="value">-- °C</div></div>
+        <div class="card small"><div class="label">Kelembaban</div><div id="hum" class="value">-- %</div></div>
       </div>
 
-      <!-- Baris Soil 1 & 2 -->
       <div class="row">
         <div class="card"><div class="label">Soil 1</div><canvas id="soil1"></canvas></div>
         <div class="card"><div class="label">Soil 2</div><canvas id="soil2"></canvas></div>
       </div>
 
-      <!-- Baris Soil 3 & 4 -->
       <div class="row">
         <div class="card"><div class="label">Soil 3</div><canvas id="soil3"></canvas></div>
         <div class="card"><div class="label">Soil 4</div><canvas id="soil4"></canvas></div>
       </div>
 
-      <!-- Gauge besar rata-rata soil -->
       <div class="big-gauge">
         <div class="label">Rata-rata Soil</div>
         <canvas id="avgSoil"></canvas>
       </div>
 
-      <!-- Status Pompa & Mode -->
       <div class="row">
         <div class="card small"><div class="label">Status Pompa</div><div id="pumpStatus" class="value">--</div></div>
         <div class="card small"><div class="label">Status Mode</div><div id="modeStatus" class="value">--</div></div>
       </div>
     </div>
 
-    <!-- Tombol Kontrol -->
     <div class="footer-btns">
       <button class="gray" id="pumpBtn">Pompa: OFF</button>
       <button class="orange" id="modeBtn">Mode: AUTO</button>
-      <button class="gray" id="logoutBtn">Logout</button>
+      <button class="gray" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
     </div>
   </div>
 
   <footer>© Sistem Irigasi Tetes Otomatis 2025 | muchtar umar</footer>
 
-  <!-- ==================== FIREBASE + JAVASCRIPT ==================== -->
+  <!-- FIREBASE -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
   <script>
-    /* -------------------------------------------------------
-       🔥 Konfigurasi Firebase & Autentikasi Login
-    ------------------------------------------------------- */
-   const firebaseConfig = {
-    apiKey: "AIzaSyBX5WvmXxKL12z2lvU1Jl5RkBMNAzIwMOQ",
-    authDomain: "irigasi-tetes-v1.firebaseapp.com",
-    databaseURL: "https://irigasi-tetes-v1-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "irigasi-tetes-v1",
-    storageBucket: "irigasi-tetes-v1.firebasestorage.app",
-    messagingSenderId: "952552756311",
-    appId: "1:952552756311:web:75c3b6b3c7d73cde86bf12"
-          };
-
+    const firebaseConfig = {
+      apiKey: "AIzaSyBX5WvmXxKL12z2lvU1Jl5RkBMNAzIwMOQ",
+      authDomain: "irigasi-tetes-v1.firebaseapp.com",
+      databaseURL: "https://irigasi-tetes-v1-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "irigasi-tetes-v1",
+      storageBucket: "irigasi-tetes-v1.firebasestorage.app",
+      messagingSenderId: "952552756311",
+      appId: "1:952552756311:web:75c3b6b3c7d73cde86bf12"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
-    const loginForm = document.getElementById("loginForm");
-    const dashboard = document.getElementById("dashboard");
+    // Login
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
 
-    /* Tombol Login */
-    document.getElementById("loginBtn").onclick = async () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+    loginBtn.addEventListener("click", async () => {
+      const email = emailEl.value.trim();
+      const pass = passEl.value.trim();
+      if (!email || !pass) return alert("Masukkan email dan password terlebih dahulu!");
       try {
-        await auth.signInWithEmailAndPassword(email, password);
-      } catch (error) {
-        alert("Login gagal: " + error.message);
-      }
-    };
-
-    /* Deteksi status login */
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        loginForm.classList.add("fade-out");
-        setTimeout(() => {
-          loginForm.style.display = "none";
-          dashboard.classList.add("show");
-        }, 600);
-        loadData();
-      } else {
-        dashboard.classList.remove("show");
-        loginForm.style.display = "block";
-        loginForm.classList.remove("fade-out");
+        await auth.signInWithEmailAndPassword(email, pass);
+      } catch (e) {
+        alert("Login gagal: " + e.message);
       }
     });
 
-    /* Tombol Logout */
+    auth.onAuthStateChanged(user => {
+      if (user) showDashboard();
+      else showLogin();
+    });
+
+    function showDashboard() {
+      loginForm.style.display = "none";
+      dashboard.classList.add("show");
+      loadData();
+    }
+
+    function showLogin() {
+      dashboard.classList.remove("show");
+      loginForm.style.display = "block";
+    }
+
     document.getElementById("logoutBtn").onclick = () => auth.signOut();
 
-    /* -------------------------------------------------------
-       🌡 Fungsi Gauge Chart
-    ------------------------------------------------------- */
+    // Gauges
     const gauges = {};
+    const getColor = v => v > 70 ? "#4caf50" : v > 40 ? "#ffc107" : "#f44336";
 
-    // Warna gradasi gauge
-    function getGradientColor(ctx, value) {
-      const gradient = ctx.createLinearGradient(0, 0, 200, 0);
-      gradient.addColorStop(0, "#ff0000");
-      gradient.addColorStop(0.5, "#fff200");
-      gradient.addColorStop(1, "#00ff00");
-      return gradient;
+    function createGauge(id, val, full=false){
+      const ctx=document.getElementById(id).getContext('2d');
+      gauges[id]=new Chart(ctx,{
+        type:'doughnut',
+        data:{datasets:[{data:[val,100-val],backgroundColor:[getColor(val),'#444'],borderWidth:0,
+        circumference:full?360:270,rotation:full?-90:225,cutout:'75%',borderRadius:50}]},
+        options:{plugins:{legend:{display:false},tooltip:{enabled:false}}},
+        plugins:[{id:'textCenter',afterDraw:c=>{
+          const{ctx,chartArea:{width,height,left,top}}=c;ctx.save();
+          ctx.font='bold 20px Poppins';ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.fillStyle='#fff';ctx.fillText(`${Math.round(val)}%`,width/2+left,height/2+top);
+          ctx.restore();}}]});
     }
 
-    // Membuat gauge chart baru
-    function createGaugeChart(id, value, fullCircle = false) {
-      const ctx = document.getElementById(id).getContext('2d');
-      gauges[id] = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          datasets: [{
-            data: [value, 100 - value],
-            backgroundColor: [getGradientColor(ctx, value), '#e6e6e6'],
-            borderWidth: 0,
-            circumference: fullCircle ? 360 : 270,
-            rotation: fullCircle ? -90 : 225,
-            cutout: '75%',
-            borderRadius: 50,
-          }]
-        },
-        options: {
-          plugins: { legend: { display: false }, tooltip: { enabled: false } },
-          animation: { animateRotate: true, duration: 800, easing: 'easeOutQuart' },
-        },
-        plugins: [{
-          id: 'textCenter',
-          afterDraw: chart => {
-            const { ctx, chartArea: { width, height, left, top } } = chart;
-            ctx.save();
-            ctx.font = 'bold 22px Poppins';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#333';
-            ctx.fillText(${Math.round(value)}%, width / 2 + left, height / 2 + top / 1);
-            ctx.restore();
-          }
-        }]
+    function updateGauge(id,val){
+      const c=gauges[id];if(!c)return;
+      c.data.datasets[0].data=[val,100-val];
+      c.data.datasets[0].backgroundColor[0]=getColor(val);
+      c.update();
+    }
+
+    // Load Data
+    function loadData(){
+      db.ref("SensorData").on("value",s=>{
+        const d=s.val();if(!d)return;
+        temp.innerText=`${d.temperature} °C`;
+        hum.innerText=`${d.humidity} %`;
+        const soils=[d.soil1,d.soil2,d.soil3,d.soil4];
+        const avg=Math.round(soils.reduce((a,b)=>a+b)/4);
+        soils.forEach((v,i)=>!gauges[`soil${i+1}`]?createGauge(`soil${i+1}`,v):updateGauge(`soil${i+1}`,v));
+        !gauges.avgSoil?createGauge("avgSoil",avg,true):updateGauge("avgSoil",avg);
+        pumpStatus.innerText=d.pump?"ON":"OFF";
+        modeStatus.innerText=d.mode;
+        if(d.pump){pumpBtn.className="green";pumpBtn.innerText="Pompa: ON";}
+        else{pumpBtn.className="gray";pumpBtn.innerText="Pompa: OFF";}
+        if(d.mode==="AUTO"){modeBtn.className="orange";pumpBtn.disabled=true;pumpBtn.classList.add("locked");}
+        else{modeBtn.className="blue";pumpBtn.disabled=false;pumpBtn.classList.remove("locked");}
       });
     }
 
-    // Update nilai gauge dengan animasi halus
-    function updateGaugeChart(id, newValue) {
-      const chart = gauges[id];
-      if (!chart) return;
-      const oldValue = chart.data.datasets[0].data[0];
-      let step = (newValue - oldValue) / 20;
-      let current = oldValue;
-      const ctx = chart.ctx;
-      const anim = setInterval(() => {
-        current += step;
-        chart.data.datasets[0].data = [current, 100 - current];
-        chart.data.datasets[0].backgroundColor[0] = getGradientColor(ctx, current);
-        chart.update();
-        if ((step > 0 && current >= newValue) || (step < 0 && current <= newValue)) clearInterval(anim);
-      }, 40);
-    }
+    const pumpBtn=document.getElementById("pumpBtn");
+    const modeBtn=document.getElementById("modeBtn");
 
-    /* -------------------------------------------------------
-       📊 Load Data dari Firebase
-    ------------------------------------------------------- */
-    function loadData() {
-      db.ref("SensorData").on("value", (snap) => {
-        const d = snap.val();
-        if (!d) return;
-
-        // Temperatur dan kelembaban
-        const tempEl = document.getElementById("temp");
-        const humEl = document.getElementById("hum");
-        tempEl.innerText = ${d.temperature} °C;
-        humEl.innerText = ${d.humidity} %;
-
-        // Efek warna kartu
-        const tempCard = document.getElementById("tempCard");
-        const humCard = document.getElementById("humCard");
-        tempCard.style.backgroundColor = d.temperature > 35 ? "#ff8a80" : "#a8e6cf";
-        humCard.style.backgroundColor = d.humidity > 70 ? "#4fc3f7" : "#fff59d";
-
-        // Soil sensor
-        const soils = [d.soil1, d.soil2, d.soil3, d.soil4];
-        const avg = Math.round((soils.reduce((a,b)=>a+b,0))/4);
-
-        soils.forEach((v, i) => {
-          const id = soil${i + 1};
-          if (!gauges[id]) createGaugeChart(id, v);
-          else updateGaugeChart(id, v);
-        });
-
-        if (!gauges["avgSoil"]) createGaugeChart("avgSoil", avg, true);
-        else updateGaugeChart("avgSoil", avg);
-
-        // Status pompa & mode
-        document.getElementById("pumpStatus").innerText = d.pump === 1 ? "ON" : "OFF";
-        document.getElementById("modeStatus").innerText = d.mode;
-
-        const pumpBtn = document.getElementById("pumpBtn");
-        const modeBtn = document.getElementById("modeBtn");
-
-        // Warna tombol berdasarkan status
-        if (d.pump === 1) {
-          pumpBtn.className = "green";
-          pumpBtn.innerText = "Pompa: ON";
-        } else {
-          pumpBtn.className = "gray";
-          pumpBtn.innerText = "Pompa: OFF";
-        }
-
-        if (d.mode === "AUTO") {
-          modeBtn.className = "orange";
-          modeBtn.innerText = "Mode: AUTO";
-          pumpBtn.classList.add("locked");
-          pumpBtn.disabled = true;
-        } else {
-          modeBtn.className = "blue";
-          modeBtn.innerText = "Mode: MANUAL";
-          pumpBtn.classList.remove("locked");
-          pumpBtn.disabled = false;
-        }
-      });
-    }
-
-    /* -------------------------------------------------------
-       ⚙ Kontrol Tombol Pompa & Mode
-    ------------------------------------------------------- */
-    document.getElementById("pumpBtn").onclick = () => {
-      const ref = db.ref("SensorData/pump");
-      ref.get().then(s => ref.set(s.val() === 1 ? 0 : 1));
-    };
-
-    document.getElementById("modeBtn").onclick = () => {
-      const ref = db.ref("SensorData/mode");
-      ref.get().then(s => ref.set(s.val() === "AUTO" ? "MANUAL" : "AUTO"));
-    };
+    pumpBtn.onclick=()=>{const r=db.ref("SensorData/pump");r.get().then(s=>r.set(s.val()?0:1));};
+    modeBtn.onclick=()=>{const r=db.ref("SensorData/mode");r.get().then(s=>r.set(s.val()==="AUTO"?"MANUAL":"AUTO"));};
   </script>
 </body>
 </html>
