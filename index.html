@@ -39,6 +39,11 @@
       transition: background 0.4s, color 0.4s;
     }
 
+    /* ==== Smooth layout transitions ==== */
+    .grid, .soil-grid, .small-card, .avg-card, .controls, .btn, header, footer {
+      transition: all 0.5s ease;
+    }
+
     .page {max-width:1200px; margin:12px auto; padding:12px;}
     header {text-align:center; margin-bottom:12px; position:relative;}
     .title {
@@ -48,6 +53,7 @@
       background:#0b0b0b;
       color:#bff2c9;
       font-weight:700;
+      transition: all 0.5s ease;
     }
 
     #themeToggle {
@@ -73,6 +79,7 @@
       grid-template-columns:repeat(4,1fr);
       gap:14px;
       align-items:start;
+      transition: all 0.5s ease-in-out;
     }
 
     .small-card {
@@ -82,6 +89,7 @@
       padding:14px;
       text-align:center;
       box-shadow:0 8px 24px rgba(0,0,0,0.18);
+      transition: all 0.4s ease;
     }
     .small-card .label {color:var(--muted); font-size:13px; margin-bottom:6px;}
     .small-card .value {font-weight:800; font-size:18px;}
@@ -91,6 +99,7 @@
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:14px;
+      transition: all 0.5s ease;
     }
 
     .soil-card {
@@ -100,6 +109,7 @@
       color:#fff;
       text-align:center;
       box-shadow:0 8px 24px rgba(0,0,0,0.22);
+      transition: all 0.5s ease;
     }
     .soil-card h4 {margin:0 0 8px 0; color:var(--muted); font-weight:600;}
     canvas {width:100% !important; height:auto !important;}
@@ -115,6 +125,7 @@
       justify-content:center;
       box-shadow:0 10px 28px rgba(0,0,0,0.28);
       min-height:300px;
+      transition: all 0.6s ease;
     }
 
     .controls {
@@ -124,6 +135,7 @@
       flex-wrap:wrap;
       gap:10px;
       margin-top:10px;
+      transition: all 0.5s ease;
     }
 
     .btn {
@@ -134,8 +146,9 @@
       font-weight:700;
       color:#fff;
       box-shadow:0 8px 20px rgba(0,0,0,0.12);
-      transition:0.3s;
+      transition: all 0.3s ease;
     }
+    .btn:hover {transform:scale(1.04);}
     .pump-on{background:var(--accent);}
     .pump-off{background:#525252;}
     .mode-auto{background:#ef7d1a;}
@@ -143,7 +156,7 @@
     .logout{background:#6b7280;}
     .btn:disabled{opacity:0.5; cursor:not-allowed;}
 
-    footer {margin-top:18px; text-align:center; color:#666; font-size:13px;}
+    footer {margin-top:18px; text-align:center; color:#666; font-size:13px; transition: all 0.4s ease;}
 
     #login-box {
       display:none;
@@ -155,6 +168,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
+      transition: all 0.5s ease;
     }
     #login-box .form {
       background:#1b1b1d;
@@ -163,6 +177,7 @@
       width:90%;
       max-width:360px;
       text-align:center;
+      transition: all 0.4s ease;
     }
     #login-box input {
       width:100%;
@@ -172,7 +187,9 @@
       border:none;
       background:#2a2a2d;
       color:#fff;
+      transition: all 0.3s ease;
     }
+    #login-box input:focus {outline:none; background:#333;}
     #login-box button {
       width:100%;
       padding:10px;
@@ -181,7 +198,9 @@
       background:#2ecc71;
       color:#fff;
       font-weight:700;
+      transition: all 0.3s ease;
     }
+    #login-box button:hover {background:#34d982;}
     .error{color:#ff6b6b;font-size:13px;}
 
     /* ==== RESPONSIVE ==== */
