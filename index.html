@@ -198,20 +198,24 @@
     #login-box button:hover {background:#34d982;}
     .error{color:#ff6b6b;font-size:13px;}
 
-    /* RESPONSIVE */
+    /* RESPONSIVE UNTUK TABLET */
     @media(max-width:920px){
       .grid{grid-template-columns:repeat(2,1fr);}
       .avg-card{grid-column:1 / -1;}
     }
-    @media(max-width:520px){
+
+    /* RESPONSIVE UNTUK HP */
+    @media (max-width:480px){
       body{font-size:15px; overflow-y:auto;}
       .page{padding:12px;}
-      .grid{grid-template-columns:1fr;}
-      .soil-grid{grid-template-columns:1fr;}
-      .avg-card{min-height:240px;}
-      .controls{flex-direction:column; align-items:center;}
-      .small-card, .soil-card, .avg-card{padding:16px; border-radius:18px;}
-      .btn{width:90%; max-width:320px;}
+      .grid{display:flex; flex-direction:column; align-items:center; gap:12px;}
+      .small-card{width:90%; max-width:360px;}
+      .soil-grid{display:flex; flex-direction:column; align-items:center; gap:12px; width:100%;}
+      .soil-card{width:90%; max-width:360px;}
+      .avg-card{width:90%; max-width:360px; order:10; min-height:240px;}
+      .controls{flex-direction:column; align-items:center; width:100%; margin-top:20px;}
+      .controls .btn{width:90%; max-width:320px;}
+      footer{text-align:center; margin-top:25px; font-size:14px;}
       header .title{font-size:0.9rem; padding:8px 12px;}
     }
   </style>
@@ -260,7 +264,7 @@
     </div>
   </section>
 
-  <footer>© Sistem Irigasi Tetes 2025 | muchtar umar</footer>
+  <footer>© 2025 Sistem Irigasi Tetes | by Muchtar Umar</footer>
 </div>
 
 <script>
