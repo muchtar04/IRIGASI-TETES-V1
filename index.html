@@ -203,17 +203,14 @@
       .grid{grid-template-columns:repeat(2,1fr);}
       .avg-card{grid-column:1 / -1;}
     }
-
     @media(max-width:520px){
       body{font-size:15px; overflow-y:auto;}
-      .page{padding:10px;}
+      .page{padding:12px;}
       .grid{grid-template-columns:1fr;}
-      .soil-grid{grid-template-columns:1fr; gap:12px;}
-      .soil-card{padding:12px; border-radius:16px;}
-      .soil-card canvas{max-width:180px !important; height:auto !important;}
-      .avg-card{min-height:220px; padding:14px;}
+      .soil-grid{grid-template-columns:1fr;}
+      .avg-card{min-height:240px;}
       .controls{flex-direction:column; align-items:center;}
-      .small-card, .soil-card, .avg-card{padding:14px; border-radius:18px;}
+      .small-card, .soil-card, .avg-card{padding:16px; border-radius:18px;}
       .btn{width:90%; max-width:320px;}
       header .title{font-size:0.9rem; padding:8px 12px;}
     }
