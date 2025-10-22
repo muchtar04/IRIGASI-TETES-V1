@@ -39,9 +39,9 @@
     }
 
     .page {
-      max-width:1000px;
+      max-width:1200px;
       margin:0 auto;
-      padding:14px;
+      padding:16px;
     }
 
     header {
@@ -53,11 +53,10 @@
     .title {
       display:inline-block;
       padding:10px 22px;
-      border-radius:12px;
+      border-radius:10px;
       background:#0b0b0b;
       color:#bff2c9;
       font-weight:700;
-      font-size:1rem;
       transition: all 0.4s ease;
     }
 
@@ -82,7 +81,7 @@
     .grid {
       display:grid;
       grid-template-columns:repeat(4,1fr);
-      gap:14px;
+      gap:16px;
     }
 
     .small-card {
@@ -97,51 +96,35 @@
     .small-card .label {color:var(--muted); font-size:13px; margin-bottom:6px;}
     .small-card .value {font-weight:800; font-size:18px;}
 
-    /* GRID SOIL */
     .soil-grid {
       grid-column:1 / span 2;
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:14px;
+      gap:16px;
     }
 
     .soil-card {
       background:linear-gradient(180deg,#0f0f10,#161617);
       border-radius:16px;
-      padding:12px;
+      padding:16px;
       color:#fff;
       text-align:center;
       box-shadow:0 4px 16px rgba(0,0,0,0.3);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
     }
-    .soil-card h4 {
-      margin:0 0 6px 0;
-      color:var(--muted);
-      font-weight:600;
-      font-size:14px;
-    }
-    canvas {
-      width:100% !important;
-      height:auto !important;
-      max-width:240px;
-      margin:0 auto;
-      display:block;
-    }
+    .soil-card h4 {margin:0 0 10px 0; color:var(--muted); font-weight:600;}
+    canvas {width:100% !important; height:auto !important; max-width:320px; margin:0 auto; display:block;}
 
     .avg-card {
       grid-column:3 / span 2;
       background:linear-gradient(180deg,#0f0f10,#151616);
       border-radius:16px;
-      padding:16px;
+      padding:20px;
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:center;
       box-shadow:0 4px 18px rgba(0,0,0,0.3);
-      min-height:260px;
+      min-height:300px;
     }
 
     .controls {
@@ -149,8 +132,8 @@
       display:flex;
       justify-content:center;
       flex-wrap:wrap;
-      gap:10px;
-      margin-top:10px;
+      gap:12px;
+      margin-top:14px;
     }
 
     .btn {
@@ -162,7 +145,6 @@
       color:#fff;
       box-shadow:0 4px 14px rgba(0,0,0,0.25);
       transition: all 0.3s ease;
-      min-width:140px;
     }
     .btn:hover {transform:scale(1.05);}
     .pump-on{background:var(--accent);}
@@ -172,12 +154,7 @@
     .logout{background:#6b7280;}
     .btn:disabled{opacity:0.5; cursor:not-allowed;}
 
-    footer {
-      margin-top:20px;
-      text-align:center;
-      color:#888;
-      font-size:13px;
-    }
+    footer {margin-top:20px; text-align:center; color:#888; font-size:13px;}
 
     /* LOGIN */
     #login-box {
@@ -228,27 +205,27 @@
     }
     @media(max-width:520px){
       body{font-size:15px; overflow-y:auto;}
-      .page{padding:10px;}
+      .page{padding:12px;}
       .grid{grid-template-columns:1fr;}
       .soil-grid{grid-template-columns:1fr;}
-      .avg-card{min-height:220px;}
+      .avg-card{min-height:240px;}
       .controls{flex-direction:column; align-items:center;}
-      .small-card, .soil-card, .avg-card{padding:14px; border-radius:18px;}
+      .small-card, .soil-card, .avg-card{padding:16px; border-radius:18px;}
       .btn{width:90%; max-width:320px;}
       header .title{font-size:0.9rem; padding:8px 12px;}
     }
   </style>
 </head>
-
 <body>
+
 <!-- LOGIN -->
 <div id="login-box">
   <div class="form">
    <h2><i class="fa-solid fa-lock"></i> Masuk Ke Sistem Irigasi Tetes</h2>
-   <input type="email" id="email" placeholder="Email">
-   <input type="password" id="password" placeholder="Kata sandi">
-   <button id="btnLogin">Masuk</button>
-   <p class="error" id="error"></p>
+	<input type="email" id="email" placeholder="Email">
+	<input type="password" id="password" placeholder="Kata sandi">
+	<button id="btnLogin">Masuk</button>
+	<p class="error" id="error"></p>
   </div>
 </div>
 
@@ -337,11 +314,11 @@ const centerTextPlugin={id:'centerText',afterDraw(chart){
   const {ctx,chartArea:{width,height}}=chart;
   const v=chart.data.datasets[0].data[0];
   ctx.save();
-  ctx.font=600 ${height/10}px Inter;
+  ctx.font=`600 ${height/10}px Inter`;
   ctx.fillStyle='#dff6e6';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
-  ctx.fillText(${v}%,width/2,height/2);
+  ctx.fillText(`${v}%`,width/2,height/2);
   ctx.restore();
 }};
 const edgeLabelPlugin={id:'edgeLabel',afterDraw(chart){
@@ -353,8 +330,8 @@ const edgeLabelPlugin={id:'edgeLabel',afterDraw(chart){
   ctx.font='bold 12px Inter';
   const a1=(chart.options.rotation-90)*Math.PI/180;
   const a2=(chart.options.rotation+chart.options.circumference-90)*Math.PI/180;
-  ctx.fillText('0',x+Math.cos(a1)(r+25),y+Math.sin(a1)(r+25));
-  ctx.fillText('100',x+Math.cos(a2)(r+25),y+Math.sin(a2)(r+25));
+  ctx.fillText('0',x+Math.cos(a1)*(r+25),y+Math.sin(a1)*(r+25));
+  ctx.fillText('100',x+Math.cos(a2)*(r+25),y+Math.sin(a2)*(r+25));
   ctx.restore();
 }};
 
@@ -387,8 +364,8 @@ function updateGauge(ch,v){
 function startRealtime(){
   db.ref('SensorData').on('value',snap=>{
     const d=snap.val(); if(!d) return;
-    suhuEl.textContent=${d.suhu||'--'} °C;
-    kelembapanEl.textContent=${d.kelembaban||'--'} %;
+    suhuEl.textContent=`${d.suhu||'--'} °C`;
+    kelembapanEl.textContent=`${d.kelembaban||'--'} %`;
 
     const s1=+d.soil1||0,s2=+d.soil2||0,s3=+d.soil3||0,s4=+d.soil4||0;
     const avg=Math.round((s1+s2+s3+s4)/4);
@@ -403,8 +380,8 @@ function startRealtime(){
     pumpStatusEl.textContent=pump;
     modeStatusEl.textContent=mode;
 
-    btnPump.innerHTML=<i class="fa-solid fa-faucet"></i> Pompa: ${pump};
-    btnMode.innerHTML=<i class="fa-solid fa-gear"></i> Mode: ${mode};
+    btnPump.innerHTML=`<i class="fa-solid fa-faucet"></i> Pompa: ${pump}`;
+    btnMode.innerHTML=`<i class="fa-solid fa-gear"></i> Mode: ${mode}`;
     btnPump.className='btn '+(pump==='ON'?'pump-on':'pump-off');
     btnMode.className='btn '+(mode==='AUTO'?'mode-auto':'mode-manual');
     btnPump.disabled=(mode==='AUTO');
