@@ -29,13 +29,20 @@
       --text:#e6f6ea;
     }
 
-    * {box-sizing:border-box; transition: all 0.35s ease-in-out;}
+    * {box-sizing:border-box;}
+    html,body {height:100%;}
     body {
       margin:0;
       font-family:Inter,"Poppins",system-ui,Arial;
       background:var(--bg);
       color:var(--text);
       overflow-x:hidden;
+      transition: background 0.35s ease, color 0.35s ease;
+    }
+
+    /* Smooth layout transitions for elements that change size/position */
+    .grid, .soil-grid, .small-card, .soil-card, .avg-card, .controls, .btn, header, footer {
+      transition: all 0.35s ease-in-out;
     }
 
     .page {
@@ -79,10 +86,12 @@
     }
     #themeToggle:hover {background:#2a2a2d; color:#fff;}
 
+    /* Top grid: metrics + soil area + avg card */
     .grid {
       display:grid;
       grid-template-columns:repeat(4,1fr);
       gap:14px;
+      align-items:start;
     }
 
     .small-card {
@@ -97,7 +106,7 @@
     .small-card .label {color:var(--muted); font-size:13px; margin-bottom:6px;}
     .small-card .value {font-weight:800; font-size:18px;}
 
-    /* GRID SOIL */
+    /* Soil grid area: by default uses 2 columns within overall layout */
     .soil-grid {
       grid-column:1 / span 2;
       display:grid;
@@ -116,6 +125,7 @@
       flex-direction:column;
       align-items:center;
       justify-content:center;
+      min-height:160px;
     }
     .soil-card h4 {
       margin:0 0 6px 0;
@@ -123,6 +133,8 @@
       font-weight:600;
       font-size:14px;
     }
+
+    /* Make canvases centered and constrained */
     canvas {
       width:100% !important;
       height:auto !important;
@@ -161,10 +173,10 @@
       font-weight:700;
       color:#fff;
       box-shadow:0 4px 14px rgba(0,0,0,0.25);
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
       min-width:140px;
     }
-    .btn:hover {transform:scale(1.05);}
+    .btn:hover {transform:scale(1.03);}
     .pump-on{background:var(--accent);}
     .pump-off{background:#525252;}
     .mode-auto{background:#ef7d1a;}
@@ -221,34 +233,45 @@
     #login-box button:hover {background:#34d982;}
     .error{color:#ff6b6b;font-size:13px;}
 
-    /* RESPONSIVE */
+    /* RESPONSIVE RULES
+       Desktop: original layout (4 columns)
+       Tablet: 2 columns for top grid
+       Mobile (<= 520px): we make the overall grid 1 column, but inside soil-grid keep 2 columns
+       so Soil1-4 appear as 2 per row (2x2) on mobile as requested.
+    */
     @media(max-width:920px){
       .grid{grid-template-columns:repeat(2,1fr);}
       .avg-card{grid-column:1 / -1;}
     }
+
     @media(max-width:520px){
       body{font-size:15px; overflow-y:auto;}
       .page{padding:10px;}
+      /* make top-level grid single column so small-cards stack
+         but keep soil-grid 2 columns to achieve 2x2 soil layout */
       .grid{grid-template-columns:1fr;}
-      .soil-grid{grid-template-columns:1fr;}
+      .soil-grid{grid-template-columns:repeat(2,1fr); gap:10px;}
       .avg-card{min-height:220px;}
       .controls{flex-direction:column; align-items:center;}
-      .small-card, .soil-card, .avg-card{padding:14px; border-radius:18px;}
+      .small-card, .soil-card, .avg-card{padding:12px; border-radius:14px;}
+      .soil-card{min-height:150px;}
+      /* reduce canvas width on small screens to avoid big appearance */
+      canvas {max-width:180px !important;}
       .btn{width:90%; max-width:320px;}
       header .title{font-size:0.9rem; padding:8px 12px;}
     }
   </style>
 </head>
-
 <body>
+
 <!-- LOGIN -->
 <div id="login-box">
   <div class="form">
-   <h2><i class="fa-solid fa-lock"></i> Masuk Ke Sistem Irigasi Tetes</h2>
-   <input type="email" id="email" placeholder="Email">
-   <input type="password" id="password" placeholder="Kata sandi">
-   <button id="btnLogin">Masuk</button>
-   <p class="error" id="error"></p>
+    <h2><i class="fa-solid fa-lock"></i> Masuk Ke Sistem Irigasi Tetes</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Kata sandi">
+    <button id="btnLogin">Masuk</button>
+    <p class="error" id="error"></p>
   </div>
 </div>
 
@@ -256,7 +279,7 @@
 <div id="dashboard" class="page" style="display:none;">
   <header>
     <div class="title">🌱 SISTEM IRIGASI TETES 💧</div>
-    <button id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+    <button id="themeToggle" aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
   </header>
 
   <section class="grid">
@@ -273,7 +296,8 @@
     </div>
 
     <div class="avg-card">
-      <h3>Rata-rata Soil</h3><canvas id="avgSoil"></canvas>
+      <h3>Rata-rata Soil</h3>
+      <canvas id="avgSoil"></canvas>
     </div>
 
     <div class="controls">
@@ -283,7 +307,7 @@
     </div>
   </section>
 
-  <footer>© Sistem Irigasi Tetes 2025 | muchtar umar</footer>
+  <footer>© 2025 Sistem Irigasi Tetes | by Muchtar Umar</footer>
 </div>
 
 <script>
@@ -332,12 +356,14 @@ const loginBox=document.getElementById('login-box'),
       btnPump=document.getElementById('btnPump'),
       btnMode=document.getElementById('btnMode');
 
-/* === Chart.js Plugin === */
+/* === Chart.js Plugin: center text & edge labels === */
 const centerTextPlugin={id:'centerText',afterDraw(chart){
   const {ctx,chartArea:{width,height}}=chart;
   const v=chart.data.datasets[0].data[0];
   ctx.save();
-  ctx.font=`600 ${height/10}px Inter`;
+  // clamp font size for small canvases
+  const fontSize = Math.max(12, Math.round(Math.min(width,height)/8));
+  ctx.font=`600 ${fontSize}px Inter, Poppins, Arial`;
   ctx.fillStyle='#dff6e6';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
@@ -345,39 +371,54 @@ const centerTextPlugin={id:'centerText',afterDraw(chart){
   ctx.restore();
 }};
 const edgeLabelPlugin={id:'edgeLabel',afterDraw(chart){
-  const {ctx,chartArea:{width,height}}=chart;
-  const x=width/2,y=height/2;
-  const r=chart._metasets[0].data[0].outerRadius;
-  ctx.save();
-  ctx.fillStyle='#aab3b6';
-  ctx.font='bold 12px Inter';
-  const a1=(chart.options.rotation-90)*Math.PI/180;
-  const a2=(chart.options.rotation+chart.options.circumference-90)*Math.PI/180;
-  ctx.fillText('0',x+Math.cos(a1)*(r+25),y+Math.sin(a1)*(r+25));
-  ctx.fillText('100',x+Math.cos(a2)*(r+25),y+Math.sin(a2)*(r+25));
-  ctx.restore();
+  try{
+    const {ctx,chartArea:{width,height}}=chart;
+    const x=width/2,y=height/2;
+    const meta = chart.getDatasetMeta(0);
+    const r = meta.data && meta.data[0] && meta.data[0].outerRadius ? meta.data[0].outerRadius : Math.min(width,height)/2;
+    ctx.save();
+    ctx.fillStyle='#aab3b6';
+    ctx.font='bold 11px Inter, Poppins, Arial';
+    const a1=(chart.options.rotation-90)*Math.PI/180;
+    const a2=(chart.options.rotation+chart.options.circumference-90)*Math.PI/180;
+    ctx.fillText('0',x+Math.cos(a1)*(r+18),y+Math.sin(a1)*(r+18));
+    ctx.fillText('100',x+Math.cos(a2)*(r+18),y+Math.sin(a2)*(r+18));
+    ctx.restore();
+  }catch(e){/* ignore if chart internals differ */ }
 }};
 
 /* === Gauge Setup === */
 function getColor(v){return v>70?'#2ecc71':v>40?'#ffb86b':'#ff6b6b';}
 function createGauge(id,val=0,opt={}){
   const ctx=document.getElementById(id).getContext('2d');
-  return new Chart(ctx,{
+  const cfg = {
     type:'doughnut',
     data:{datasets:[{data:[val,100-val],backgroundColor:[getColor(val),'#222'],borderWidth:0,borderRadius:50}]},
-    options:{cutout:opt.cutout||'85%',rotation:opt.rotation??-135,circumference:opt.circumference??270,plugins:{legend:{display:false}}},
+    options:{
+      cutout:opt.cutout||'85%',
+      rotation:opt.rotation??-135,
+      circumference:opt.circumference??270,
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+    },
     plugins:[centerTextPlugin,edgeLabelPlugin]
-  });
+  };
+  const chart = new Chart(ctx,cfg);
+  return chart;
 }
+
+/* create charts (will render into existing canvas elements) */
 const charts={
-  soil1:createGauge('soil1'),
-  soil2:createGauge('soil2'),
-  soil3:createGauge('soil3'),
-  soil4:createGauge('soil4'),
-  avg:createGauge('avgSoil',0,{rotation:-90,circumference:360})
+  soil1:createGauge('soil1',0),
+  soil2:createGauge('soil2',0),
+  soil3:createGauge('soil3',0),
+  soil4:createGauge('soil4',0),
+  avg:createGauge('avgSoil',0,{rotation:-90,circumference:360,cutout:'70%'})
 };
+/* update helper with smoothing (Chart.js will animate) */
 function updateGauge(ch,v){
-  v=Math.max(0,Math.min(100,v));
+  v=Math.max(0,Math.min(100,Math.round(v)));
   ch.data.datasets[0].data=[v,100-v];
   ch.data.datasets[0].backgroundColor[0]=getColor(v);
   ch.update();
@@ -390,7 +431,7 @@ function startRealtime(){
     suhuEl.textContent=`${d.suhu||'--'} °C`;
     kelembapanEl.textContent=`${d.kelembaban||'--'} %`;
 
-    const s1=+d.soil1||0,s2=+d.soil2||0,s3=+d.soil3||0,s4=+d.soil4||0;
+    const s1=Number(d.soil1)||0, s2=Number(d.soil2)||0, s3=Number(d.soil3)||0, s4=Number(d.soil4)||0;
     const avg=Math.round((s1+s2+s3+s4)/4);
     updateGauge(charts.soil1,s1);
     updateGauge(charts.soil2,s2);
@@ -429,10 +470,25 @@ btnLogin.onclick=()=>{
   auth.signInWithEmailAndPassword(e,p).catch(er=>errEl.textContent=er.message);
 };
 btnLogout.onclick=()=>auth.signOut();
+
 auth.onAuthStateChanged(u=>{
-  if(u){loginBox.style.display='none';dashboard.style.display='block';startRealtime();}
-  else{loginBox.style.display='flex';dashboard.style.display='none';}
+  if(u){ loginBox.style.display='none'; dashboard.style.display='block'; startRealtime(); }
+  else { loginBox.style.display='flex'; dashboard.style.display='none'; }
 });
+
+/* Ensure canvases have a fixed aspect ratio so mobile sizing is predictable */
+function resizeCanvases(){
+  // set height relative to computed width to make Chart.js size stable
+  ['soil1','soil2','soil3','soil4','avgSoil'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    const w = el.clientWidth;
+    // set a good aspect ratio: height ~ 0.55 * width (works for semicircular gauge)
+    el.style.height = Math.round(w * 0.55) + 'px';
+  });
+}
+window.addEventListener('load', ()=>{ resizeCanvases(); setTimeout(()=>{ /* re-render charts after resize */ Object.values(charts).forEach(c=>c.resize()); },120);});
+window.addEventListener('resize', ()=>{ resizeCanvases(); Object.values(charts).forEach(c=>c.resize());});
 </script>
 </body>
 </html>
