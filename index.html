@@ -39,9 +39,9 @@
     }
 
     .page {
-      max-width:1200px;
+      max-width:1000px;
       margin:0 auto;
-      padding:16px;
+      padding:14px;
     }
 
     header {
@@ -53,10 +53,11 @@
     .title {
       display:inline-block;
       padding:10px 22px;
-      border-radius:10px;
+      border-radius:12px;
       background:#0b0b0b;
       color:#bff2c9;
       font-weight:700;
+      font-size:1rem;
       transition: all 0.4s ease;
     }
 
@@ -81,7 +82,7 @@
     .grid {
       display:grid;
       grid-template-columns:repeat(4,1fr);
-      gap:16px;
+      gap:14px;
     }
 
     .small-card {
@@ -96,35 +97,51 @@
     .small-card .label {color:var(--muted); font-size:13px; margin-bottom:6px;}
     .small-card .value {font-weight:800; font-size:18px;}
 
+    /* GRID SOIL */
     .soil-grid {
       grid-column:1 / span 2;
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:16px;
+      gap:14px;
     }
 
     .soil-card {
       background:linear-gradient(180deg,#0f0f10,#161617);
       border-radius:16px;
-      padding:16px;
+      padding:12px;
       color:#fff;
       text-align:center;
       box-shadow:0 4px 16px rgba(0,0,0,0.3);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
     }
-    .soil-card h4 {margin:0 0 10px 0; color:var(--muted); font-weight:600;}
-    canvas {width:100% !important; height:auto !important; max-width:320px; margin:0 auto; display:block;}
+    .soil-card h4 {
+      margin:0 0 6px 0;
+      color:var(--muted);
+      font-weight:600;
+      font-size:14px;
+    }
+    canvas {
+      width:100% !important;
+      height:auto !important;
+      max-width:240px;
+      margin:0 auto;
+      display:block;
+    }
 
     .avg-card {
       grid-column:3 / span 2;
       background:linear-gradient(180deg,#0f0f10,#151616);
       border-radius:16px;
-      padding:20px;
+      padding:16px;
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:center;
       box-shadow:0 4px 18px rgba(0,0,0,0.3);
-      min-height:300px;
+      min-height:260px;
     }
 
     .controls {
@@ -132,8 +149,8 @@
       display:flex;
       justify-content:center;
       flex-wrap:wrap;
-      gap:12px;
-      margin-top:14px;
+      gap:10px;
+      margin-top:10px;
     }
 
     .btn {
@@ -145,6 +162,7 @@
       color:#fff;
       box-shadow:0 4px 14px rgba(0,0,0,0.25);
       transition: all 0.3s ease;
+      min-width:140px;
     }
     .btn:hover {transform:scale(1.05);}
     .pump-on{background:var(--accent);}
@@ -154,7 +172,12 @@
     .logout{background:#6b7280;}
     .btn:disabled{opacity:0.5; cursor:not-allowed;}
 
-    footer {margin-top:20px; text-align:center; color:#888; font-size:13px;}
+    footer {
+      margin-top:20px;
+      text-align:center;
+      color:#888;
+      font-size:13px;
+    }
 
     /* LOGIN */
     #login-box {
@@ -205,27 +228,27 @@
     }
     @media(max-width:520px){
       body{font-size:15px; overflow-y:auto;}
-      .page{padding:12px;}
+      .page{padding:10px;}
       .grid{grid-template-columns:1fr;}
       .soil-grid{grid-template-columns:1fr;}
-      .avg-card{min-height:240px;}
+      .avg-card{min-height:220px;}
       .controls{flex-direction:column; align-items:center;}
-      .small-card, .soil-card, .avg-card{padding:16px; border-radius:18px;}
+      .small-card, .soil-card, .avg-card{padding:14px; border-radius:18px;}
       .btn{width:90%; max-width:320px;}
       header .title{font-size:0.9rem; padding:8px 12px;}
     }
   </style>
 </head>
-<body>
 
+<body>
 <!-- LOGIN -->
 <div id="login-box">
   <div class="form">
    <h2><i class="fa-solid fa-lock"></i> Masuk Ke Sistem Irigasi Tetes</h2>
-	<input type="email" id="email" placeholder="Email">
-	<input type="password" id="password" placeholder="Kata sandi">
-	<button id="btnLogin">Masuk</button>
-	<p class="error" id="error"></p>
+   <input type="email" id="email" placeholder="Email">
+   <input type="password" id="password" placeholder="Kata sandi">
+   <button id="btnLogin">Masuk</button>
+   <p class="error" id="error"></p>
   </div>
 </div>
 
