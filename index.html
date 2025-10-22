@@ -2,14 +2,18 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>🌱 Sistem Irigasi Tetes</title>
 
+  <!-- CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <style>
-    :root{
+    :root {
       --bg:#f3f6f7;
       --card:#15161a;
       --muted:#aab3b6;
@@ -18,284 +22,377 @@
       --danger:#ff6b6b;
       --text:#111;
     }
-    :root[data-theme="dark"]{
+    :root[data-theme="dark"] {
       --bg:#060607;
       --card:#0f0f10;
       --muted:#9aa6a9;
       --text:#e6f6ea;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter, "Poppins", system-ui, Arial;background:var(--bg);color:var(--text)}
 
-    .page{max-width:1200px;margin:12px auto;padding:12px}
-    header{text-align:center;margin-bottom:12px}
-    .title{display:inline-block;padding:10px 22px;border-radius:10px;background:#0b0b0b;color:#bff2c9;font-weight:700}
+    * {box-sizing:border-box;}
+    body {
+      margin:0;
+      font-family:Inter,"Poppins",system-ui,Arial;
+      background:var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
+      transition: background 0.4s, color 0.4s;
+    }
 
-    .grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:auto;gap:14px;align-items:start}
-    .top-left{grid-column:1 / span 2; display:flex; gap:14px}
-    .top-right{grid-column:3 / span 2; display:flex; gap:14px}
-    .small-card{background:linear-gradient(180deg,#111214,#151619);color:#fff;border-radius:12px;padding:14px;flex:1;box-shadow:0 8px 24px rgba(0,0,0,0.18);text-align:center}
-    .small-card .label{color:var(--muted);font-size:13px;margin-bottom:6px}
-    .small-card .value{font-weight:800;font-size:18px}
+    .page {max-width:1200px; margin:12px auto; padding:12px;}
+    header {text-align:center; margin-bottom:12px; position:relative;}
+    .title {
+      display:inline-block;
+      padding:10px 22px;
+      border-radius:10px;
+      background:#0b0b0b;
+      color:#bff2c9;
+      font-weight:700;
+    }
 
-    .soil-grid{grid-column:1 / span 2; display:grid; grid-template-columns:1fr 1fr; gap:14px}
-    .soil-card{background:linear-gradient(180deg,#0f0f10,#161617); border-radius:12px; padding:12px; color:#fff; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,0.22)}
-    .soil-card h4{margin:0 0 8px 0;color:var(--muted);font-weight:600}
+    #themeToggle {
+      position:absolute;
+      top:10px;
+      right:10px;
+      background:var(--card);
+      color:var(--muted);
+      border:none;
+      border-radius:50%;
+      width:38px;
+      height:38px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:0.3s;
+    }
+    #themeToggle:hover {background:#2a2a2d; color:#fff;}
 
-    .avg-card{grid-column:3 / span 2; background:linear-gradient(180deg,#0f0f10,#151616); border-radius:12px; padding:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 10px 28px rgba(0,0,0,0.28); min-height:320px}
-    .avg-card h3{margin:0 0 8px 0;color:var(--muted)}
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      align-items:start;
+    }
 
-    .soil-canvas{width:100%;height:140px}
-    .avg-canvas{width:100%;max-width:360px;height:300px}
+    .small-card {
+      background:linear-gradient(180deg,#111214,#151619);
+      color:#fff;
+      border-radius:12px;
+      padding:14px;
+      text-align:center;
+      box-shadow:0 8px 24px rgba(0,0,0,0.18);
+    }
+    .small-card .label {color:var(--muted); font-size:13px; margin-bottom:6px;}
+    .small-card .value {font-weight:800; font-size:18px;}
 
-    .controls{grid-column:1 / -1; display:flex; justify-content:center; gap:12px; margin-top:8px}
-    .btn{padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:700;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.12);transition:0.3s}
-    .pump-on{background:var(--accent)}
-    .pump-off{background:#525252}
-    .mode-auto{background:#ef7d1a}
-    .mode-manual{background:#1976d2}
-    .logout{background:#6b7280}
-    .btn:disabled{opacity:0.5;cursor:not-allowed}
+    .soil-grid {
+      grid-column:1 / span 2;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
 
-    footer{margin-top:18px;text-align:center;color:#666;font-size:13px}
+    .soil-card {
+      background:linear-gradient(180deg,#0f0f10,#161617);
+      border-radius:12px;
+      padding:12px;
+      color:#fff;
+      text-align:center;
+      box-shadow:0 8px 24px rgba(0,0,0,0.22);
+    }
+    .soil-card h4 {margin:0 0 8px 0; color:var(--muted); font-weight:600;}
 
-    /* LOGIN BOX */
-    #login-box{
-      display:none;position:fixed;inset:0;z-index:20;
+    .avg-card {
+      grid-column:3 / span 2;
+      background:linear-gradient(180deg,#0f0f10,#151616);
+      border-radius:12px;
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 10px 28px rgba(0,0,0,0.28);
+      min-height:300px;
+    }
+
+    .controls {
+      grid-column:1 / -1;
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .btn {
+      padding:10px 14px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      font-weight:700;
+      color:#fff;
+      box-shadow:0 8px 20px rgba(0,0,0,0.12);
+      transition:0.3s;
+    }
+    .pump-on{background:var(--accent);}
+    .pump-off{background:#525252;}
+    .mode-auto{background:#ef7d1a;}
+    .mode-manual{background:#1976d2;}
+    .logout{background:#6b7280;}
+    .btn:disabled{opacity:0.5; cursor:not-allowed;}
+
+    footer {margin-top:18px; text-align:center; color:#666; font-size:13px;}
+
+    #login-box {
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:20;
       background:linear-gradient(180deg,#0f0f10,#161616);
-      color:#e9f5ec;display:flex;align-items:center;justify-content:center;
+      color:#e9f5ec;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    #login-box .form{
-      background:#1b1b1d; padding:28px 24px; border-radius:14px; width:90%; max-width:360px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.4); text-align:center;
+    #login-box .form {
+      background:#1b1b1d;
+      padding:28px 24px;
+      border-radius:14px;
+      width:90%;
+      max-width:360px;
+      text-align:center;
     }
-    #login-box h2 {margin-bottom:18px; color:#bff2c9;}
     #login-box input {
-      width:100%; padding:10px 12px; margin-bottom:12px; border-radius:8px;
-      border:none; outline:none; font-size:15px; background:#2a2a2d; color:#fff;
+      width:100%;
+      padding:10px;
+      margin-bottom:10px;
+      border-radius:8px;
+      border:none;
+      background:#2a2a2d;
+      color:#fff;
     }
     #login-box button {
-      width:100%; padding:10px 12px; border:none; border-radius:8px;
-      background:#2ecc71; color:#fff; font-weight:700; cursor:pointer;
+      width:100%;
+      padding:10px;
+      border:none;
+      border-radius:8px;
+      background:#2ecc71;
+      color:#fff;
+      font-weight:700;
     }
-    #login-box button:hover {background:#25b864;}
-    .error {color:#ff6b6b; margin-top:10px; font-size:13px;}
+    .error{color:#ff6b6b;font-size:13px;}
 
-    @media (max-width:920px){
-      .grid{grid-template-columns:repeat(2,1fr)}
+    @media(max-width:920px){
+      .grid{grid-template-columns:repeat(2,1fr);}
     }
-    @media (max-width:520px){
-      .grid{grid-template-columns:1fr}
+    @media(max-width:520px){
+      .grid{grid-template-columns:1fr;}
+      .soil-grid{grid-template-columns:1fr;}
+      .avg-card{grid-column:1 / -1; min-height:260px;}
+      .controls{flex-direction:column; align-items:center;}
+      .small-card .value{font-size:16px;}
+      body{overflow-y:auto; font-size:15px;}
     }
   </style>
 </head>
 <body>
-  <!-- LOGIN FORM -->
-  <div id="login-box">
-    <div class="form">
-      <h2><i class="fa-solid fa-seedling"></i>&nbsp;Login Irigasi</h2>
-      <input type="email" id="email" placeholder="Email" autocomplete="username">
-      <input type="password" id="password" placeholder="Kata sandi" autocomplete="current-password">
-      <button id="btnLogin">Masuk</button>
-      <div id="error" class="error"></div>
-      <footer>© Sistem Irigasi Tetes 2025</footer>
+
+<!-- LOGIN -->
+<div id="login-box">
+  <div class="form">
+   <h2><i class="fa-solid fa-lock"></i> Masuk Ke Sistem Irigasi Tetes</h2>
+	<input type="email" id="email" placeholder="Email">
+	<input type="password" id="password" placeholder="Kata sandi">
+	<button id="btnLogin">Masuk</button>
+	<p class="error" id="error"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="page" style="display:none;">
+  <header>
+    <div class="title">🌱 SISTEM IRIGASI TETES 💧</div>
+    <button id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+  </header>
+
+  <section class="grid">
+    <div class="small-card"><div class="label">Suhu</div><div id="suhu" class="value">-- °C</div></div>
+    <div class="small-card"><div class="label">Kelembapan</div><div id="kelembapan" class="value">-- %</div></div>
+    <div class="small-card"><div class="label">Pompa</div><div id="pumpStatus" class="value">--</div></div>
+    <div class="small-card"><div class="label">Mode</div><div id="modeStatus" class="value">--</div></div>
+
+    <div class="soil-grid">
+      <div class="soil-card"><h4>Soil 1</h4><canvas id="soil1"></canvas></div>
+      <div class="soil-card"><h4>Soil 2</h4><canvas id="soil2"></canvas></div>
+      <div class="soil-card"><h4>Soil 3</h4><canvas id="soil3"></canvas></div>
+      <div class="soil-card"><h4>Soil 4</h4><canvas id="soil4"></canvas></div>
     </div>
-  </div>
 
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="page" style="display:none">
-    <header><div class="title">🌱 SISTEM IRIGASI TETES 💧</div></header>
-    <section class="grid">
-      <div class="top-left">
-        <div class="small-card"><div class="label">Temperatur</div><div id="suhu" class="value">-- °C</div></div>
-        <div class="small-card"><div class="label">Kelembaban</div><div id="kelembaban" class="value">-- %</div></div>
-      </div>
-      <div class="top-right">
-        <div class="small-card"><div class="label">Status Pompa</div><div id="pumpStatus" class="value">--</div></div>
-        <div class="small-card"><div class="label">Status Mode</div><div id="modeStatus" class="value">--</div></div>
-      </div>
-      <div class="soil-grid">
-        <div class="soil-card"><h4>Soil 1</h4><canvas id="soil1" class="soil-canvas"></canvas></div>
-        <div class="soil-card"><h4>Soil 2</h4><canvas id="soil2" class="soil-canvas"></canvas></div>
-        <div class="soil-card"><h4>Soil 3</h4><canvas id="soil3" class="soil-canvas"></canvas></div>
-        <div class="soil-card"><h4>Soil 4</h4><canvas id="soil4" class="soil-canvas"></canvas></div>
-      </div>
-      <div class="avg-card">
-        <h3>Rata-rata Soil</h3><canvas id="avgSoil" class="avg-canvas"></canvas>
-      </div>
-      <div class="controls">
-        <button id="btnPump" class="btn pump-off"><i class="fa-solid fa-faucet"></i>&nbsp;Pompa: OFF</button>
-        <button id="btnMode" class="btn mode-auto"><i class="fa-solid fa-gear"></i>&nbsp;Mode: AUTO</button>
-        <button id="btnLogout" class="btn logout"><i class="fa-solid fa-right-from-bracket"></i>&nbsp;Logout</button>
-      </div>
-    </section>
-    <footer>© Sistem Irigasi Tetes 2025 | muchtar umar</footer>
-  </div>
+    <div class="avg-card">
+      <h3>Rata-rata Soil</h3><canvas id="avgSoil"></canvas>
+    </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <div class="controls">
+      <button id="btnPump" class="btn pump-off" disabled><i class="fa-solid fa-faucet"></i> Pompa: OFF</button>
+      <button id="btnMode" class="btn mode-auto"><i class="fa-solid fa-gear"></i> Mode: AUTO</button>
+      <button id="btnLogout" class="btn logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </section>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBguc6hR-XInXhzUtfKWq9GtT7AmZSjCoo",
-      authDomain: "irigasi-tetes-v1-dd986.firebaseapp.com",
-      databaseURL: "https://irigasi-tetes-v1-dd986-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "irigasi-tetes-v1-dd986",
-      storageBucket: "irigasi-tetes-v1-dd986.appspot.com",
-      messagingSenderId: "216885769539",
-      appId: "1:216885769539:web:4c8a3b6902b20ed53dabf6"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+  <footer>© Sistem Irigasi Tetes 2025 | muchtar umar</footer>
+</div>
 
-    const loginBox = document.getElementById('login-box');
-    const dashboard = document.getElementById('dashboard');
-    const emailEl = document.getElementById('email');
-    const passEl = document.getElementById('password');
-    const btnLogin = document.getElementById('btnLogin');
-    const errEl = document.getElementById('error');
-    const btnLogout = document.getElementById('btnLogout');
-    const suhuEl = document.getElementById('suhu');
-    const kelembapanEl = document.getElementById('kelembaban');
-    const pumpStatusEl = document.getElementById('pumpStatus');
-    const modeStatusEl = document.getElementById('modeStatus');
-    const btnPump = document.getElementById('btnPump');
-    const btnMode = document.getElementById('btnMode');
+<script>
+/* === Tema Otomatis + Manual === */
+const root=document.documentElement;
+const themeBtn=document.getElementById('themeToggle');
+function setTheme(mode){
+  root.dataset.theme=mode;
+  themeBtn.innerHTML=mode==='dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+  localStorage.setItem('theme',mode);
+}
+function autoTheme(){
+  const h=new Date().getHours();
+  const mode=(h>=6 && h<18)?'light':'dark';
+  setTheme(mode);
+}
+const savedTheme=localStorage.getItem('theme');
+if(savedTheme){setTheme(savedTheme);}else{autoTheme();}
+themeBtn.onclick=()=>{setTheme(root.dataset.theme==='dark'?'light':'dark');};
 
-    function applyAutoTheme(){
-      const h = new Date().getHours();
-      document.documentElement.setAttribute('data-theme', (h >= 19 || h < 6) ? 'dark' : 'light');
-    }
-    applyAutoTheme();
+/* === Firebase === */
+const firebaseConfig={
+  apiKey:"AIzaSyBguc6hR-XInXhzUtfKWq9GtT7AmZSjCoo",
+  authDomain:"irigasi-tetes-v1-dd986.firebaseapp.com",
+  databaseURL:"https://irigasi-tetes-v1-dd986-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"irigasi-tetes-v1-dd986",
+  storageBucket:"irigasi-tetes-v1-dd986.appspot.com",
+  messagingSenderId:"216885769539",
+  appId:"1:216885769539:web:4c8a3b6902b20ed53dabf6"
+};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(),db=firebase.database();
 
-    // === PLUGIN GAUGE ===
-    const centerTextPlugin = {
-      id: 'centerText',
-      afterDraw(chart) {
-        const { ctx, chartArea: { width, height } } = chart;
-        const value = chart.data.datasets[0].data[0];
-        ctx.save();
-        let fontSize = height / 4;
-        if (window.innerWidth < 400) fontSize = height / 6;
-        fontSize = Math.max(Math.min(fontSize, 22), 10);
-        ctx.font = `700 ${fontSize}px Inter, Arial`;
-        ctx.fillStyle = '#dff6e6';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(`${value}%`, width / 2, height / 2);
-        ctx.restore();
-      }
-    };
-    const edgeLabelPlugin = {
-      id: 'edgeLabel',
-      afterDraw(chart) {
-        const { ctx, chartArea: { width, height } } = chart;
-        const x = width / 2;
-        const y = height / 2;
-        const radius = chart._metasets[0].data[0].outerRadius;
-        ctx.save();
-        ctx.fillStyle = '#aab3b6';
-        ctx.font = 'bold 12px Inter, Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        const angleStart = (chart.options.rotation - 90) * Math.PI / 180;
-        const angleEnd = (chart.options.rotation + chart.options.circumference - 90) * Math.PI / 180;
-        const xStart = x + Math.cos(angleStart) * (radius + 35);
-        const yStart = y + Math.sin(angleStart) * (radius + 35);
-        const xEnd = x + Math.cos(angleEnd) * (radius + 35);
-        const yEnd = y + Math.sin(angleEnd) * (radius + 35);
-        ctx.fillText('0', xStart, yStart);
-        ctx.fillText('100', xEnd, yEnd);
-        ctx.restore();
-      }
-    };
-    function getColor(v){ return v>70?'#2ecc71':v>40?'#ffb86b':'#ff6b6b'; }
+/* === Elemen === */
+const loginBox=document.getElementById('login-box'),
+      dashboard=document.getElementById('dashboard'),
+      emailEl=document.getElementById('email'),
+      passEl=document.getElementById('password'),
+      btnLogin=document.getElementById('btnLogin'),
+      errEl=document.getElementById('error'),
+      btnLogout=document.getElementById('btnLogout'),
+      suhuEl=document.getElementById('suhu'),
+      kelembapanEl=document.getElementById('kelembapan'),
+      pumpStatusEl=document.getElementById('pumpStatus'),
+      modeStatusEl=document.getElementById('modeStatus'),
+      btnPump=document.getElementById('btnPump'),
+      btnMode=document.getElementById('btnMode');
 
-    function createDoughnut(id, val=0, opts={}) {
-      const ctx = document.getElementById(id).getContext('2d');
-      return new Chart(ctx,{
-        type:'doughnut',
-        data:{datasets:[{data:[val,100-val],backgroundColor:[getColor(val),'#222'],borderWidth:0,borderRadius:999}]},
-        options:{cutout:opts.cutout||'90%',rotation:opts.rotation??-135,circumference:opts.circumference??270,plugins:{legend:{display:false},tooltip:{enabled:false}}},plugins:[centerTextPlugin,edgeLabelPlugin]
-      });
-    }
+/* === Chart.js Plugin === */
+const centerTextPlugin={id:'centerText',afterDraw(chart){
+  const {ctx,chartArea:{width,height}}=chart;
+  const v=chart.data.datasets[0].data[0];
+  ctx.save();
+  ctx.font=`60 ${height/10}px Inter`; // ukuran angka diperkecil
+  ctx.fillStyle='#dff6e6';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(`${v}%`,width/2,height/2);
+  ctx.restore();
+}};
+const edgeLabelPlugin={id:'edgeLabel',afterDraw(chart){
+  const {ctx,chartArea:{width,height}}=chart;
+  const x=width/2,y=height/2;
+  const r=chart._metasets[0].data[0].outerRadius;
+  ctx.save();
+  ctx.fillStyle='#aab3b6';
+  ctx.font='bold 12px Inter';
+  const a1=(chart.options.rotation-90)*Math.PI/180;
+  const a2=(chart.options.rotation+chart.options.circumference-90)*Math.PI/180;
+  ctx.fillText('0',x+Math.cos(a1)*(r+25),y+Math.sin(a1)*(r+25));
+  ctx.fillText('100',x+Math.cos(a2)*(r+25),y+Math.sin(a2)*(r+25));
+  ctx.restore();
+}};
 
-    const charts = {
-      soil1:createDoughnut('soil1'),
-      soil2:createDoughnut('soil2'),
-      soil3:createDoughnut('soil3'),
-      soil4:createDoughnut('soil4'),
-      avg:createDoughnut('avgSoil',0,{rotation:-90,circumference:360,cutout:'90%'})
-    };
-    function updateDoughnut(ch,v){
-      v=Math.max(0,Math.min(100,Math.round(v)));
-      ch.data.datasets[0].data=[v,100-v];
-      ch.data.datasets[0].backgroundColor[0]=getColor(v);
-      ch.update();
-    }
+/* === Gauge Setup === */
+function getColor(v){return v>70?'#2ecc71':v>40?'#ffb86b':'#ff6b6b';}
+function createGauge(id,val=0,opt={}){
+  const ctx=document.getElementById(id).getContext('2d');
+  return new Chart(ctx,{
+    type:'doughnut',
+    data:{datasets:[{data:[val,100-val],backgroundColor:[getColor(val),'#222'],borderWidth:0,borderRadius:50}]},
+    options:{cutout:opt.cutout||'90%',rotation:opt.rotation??-135,circumference:opt.circumference??270,plugins:{legend:{display:false}}},
+    plugins:[centerTextPlugin,edgeLabelPlugin]
+  });
+}
+const charts={
+  soil1:createGauge('soil1'),
+  soil2:createGauge('soil2'),
+  soil3:createGauge('soil3'),
+  soil4:createGauge('soil4'),
+  avg:createGauge('avgSoil',0,{rotation:-90,circumference:360})
+};
+function updateGauge(ch,v){
+  v=Math.max(0,Math.min(100,v));
+  ch.data.datasets[0].data=[v,100-v];
+  ch.data.datasets[0].backgroundColor[0]=getColor(v);
+  ch.update();
+}
 
-    // === REALTIME DATABASE ===
-    let dbRef=null;
-    function startRealtime(){
-      dbRef=db.ref('SensorData');
-      dbRef.on('value',snap=>{
-        const d=snap.val(); if(!d)return;
-        suhuEl.textContent=`${d.suhu||'--'} °C`;
-        kelembapanEl.textContent=`${d.kelembaban||'--'} %`;
-        const s1=+d.soil1||0,s2=+d.soil2||0,s3=+d.soil3||0,s4=+d.soil4||0;
-        const avg=Math.round((s1+s2+s3+s4)/4);
-        updateDoughnut(charts.soil1,s1);
-        updateDoughnut(charts.soil2,s2);
-        updateDoughnut(charts.soil3,s3);
-        updateDoughnut(charts.soil4,s4);
-        updateDoughnut(charts.avg,avg);
+/* === Realtime Firebase === */
+function startRealtime(){
+  db.ref('SensorData').on('value',snap=>{
+    const d=snap.val(); if(!d) return;
+    suhuEl.textContent=`${d.suhu||'--'} °C`;
+    kelembapanEl.textContent=`${d.kelembaban||'--'} %`;
 
-        const pump=(d.pompa||'OFF').toUpperCase();
-        const mode=(d.mode||'AUTO').toUpperCase();
+    const s1=+d.soil1||0,s2=+d.soil2||0,s3=+d.soil3||0,s4=+d.soil4||0;
+    const avg=Math.round((s1+s2+s3+s4)/4);
+    updateGauge(charts.soil1,s1);
+    updateGauge(charts.soil2,s2);
+    updateGauge(charts.soil3,s3);
+    updateGauge(charts.soil4,s4);
+    updateGauge(charts.avg,avg);
 
-        pumpStatusEl.textContent=pump;
-        modeStatusEl.textContent=mode;
-        btnPump.className='btn '+(pump==='ON'?'pump-on':'pump-off');
-        btnPump.innerHTML=`<i class="fa-solid fa-faucet"></i>&nbsp;Pompa: ${pump}`;
-        btnMode.className='btn '+(mode==='AUTO'?'mode-auto':'mode-manual');
-        btnMode.innerHTML=`<i class="fa-solid fa-gear"></i>&nbsp;Mode: ${mode}`;
+    const pump=(d.pompa||'OFF').toUpperCase();
+    const mode=(d.mode||'AUTO').toUpperCase();
+    pumpStatusEl.textContent=pump;
+    modeStatusEl.textContent=mode;
 
-        // 🔹 Atur status tombol pompa
-        if(mode==='AUTO'){
-          btnPump.disabled=true;
-          btnPump.title='Pompa dikendalikan otomatis';
-        } else {
-          btnPump.disabled=false;
-          btnPump.title='Klik untuk mengubah status pompa';
-        }
-      });
-    }
+    // update tombol sesuai status Firebase
+    btnPump.innerHTML=`<i class="fa-solid fa-faucet"></i> Pompa: ${pump}`;
+    btnMode.innerHTML=`<i class="fa-solid fa-gear"></i> Mode: ${mode}`;
+    btnPump.className='btn '+(pump==='ON'?'pump-on':'pump-off');
+    btnMode.className='btn '+(mode==='AUTO'?'mode-auto':'mode-manual');
+    btnPump.disabled=(mode==='AUTO');
+  });
+}
 
-    // === BUTTON HANDLER ===
-    btnPump.onclick=async()=>{
-      if(btnPump.disabled) return;
-      const snap=await db.ref('SensorData/pompa').get();
-      const cur=(snap.exists()?snap.val():'OFF').toUpperCase();
-      await db.ref('SensorData').update({pompa:cur==='ON'?'OFF':'ON'});
-    };
-    btnMode.onclick=async()=>{
-      const snap=await db.ref('SensorData/mode').get();
-      const cur=(snap.exists()?snap.val():'AUTO').toUpperCase();
-      await db.ref('SensorData').update({mode:cur==='AUTO'?'MANUAL':'AUTO'});
-    };
-    btnLogout.onclick=()=>{ if(dbRef)dbRef.off(); auth.signOut(); };
-    btnLogin.onclick=()=>{
-      const email=emailEl.value.trim(),pass=passEl.value.trim();
-      if(!email||!pass){errEl.textContent='Isi email dan password.';return;}
-      auth.signInWithEmailAndPassword(email,pass).catch(e=>errEl.textContent=e.message);
-    };
-    auth.onAuthStateChanged(user=>{
-      if(user){loginBox.style.display='none';dashboard.style.display='block';startRealtime();}
-      else{loginBox.style.display='flex';dashboard.style.display='none';}
-    });
-  </script>
+/* === Kontrol Pompa & Mode === */
+btnPump.onclick=()=>{
+  if(btnPump.disabled) return;
+  const newState=pumpStatusEl.textContent==='ON'?'OFF':'ON';
+  db.ref('SensorData/pompa').set(newState);
+  btnPump.innerHTML=`<i class="fa-solid fa-faucet"></i> Pompa: ${newState}`;
+};
+btnMode.onclick=()=>{
+  const newMode=modeStatusEl.textContent==='AUTO'?'MANUAL':'AUTO';
+  db.ref('SensorData/mode').set(newMode);
+  btnMode.innerHTML=`<i class="fa-solid fa-gear"></i> Mode: ${newMode}`;
+};
+
+/* === Login / Logout === */
+btnLogin.onclick=()=>{
+  const e=emailEl.value.trim(),p=passEl.value.trim();
+  if(!e||!p){errEl.textContent='Isi email dan kata sandi';return;}
+  auth.signInWithEmailAndPassword(e,p).catch(er=>errEl.textContent=er.message);
+};
+btnLogout.onclick=()=>auth.signOut();
+auth.onAuthStateChanged(u=>{
+  if(u){loginBox.style.display='none';dashboard.style.display='block';startRealtime();}
+  else{loginBox.style.display='flex';dashboard.style.display='none';}
+});
+</script>
 </body>
 </html>
