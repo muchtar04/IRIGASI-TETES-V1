@@ -381,32 +381,45 @@ function updateGauge(ch,v){
 }
 
 /* === Realtime Firebase === */
-function startRealtime(){
-  db.ref('SensorData').on('value',snap=>{
-    const d=snap.val(); if(!d) return;
-    suhuEl.textContent=`${d.suhu||'--'} °C`;
-    kelembapanEl.textContent=`${d.kelembaban||'--'} %`;
+function startRealtime() {
+  db.ref('SensorData').on('value', snap => {
+    const d = snap.val();
+    if (!d) return;
 
-    const s1=+d.soil1||0,s2=+d.soil2||0,s3=+d.soil3||0,s4=+d.soil4||0;
-    const avg=Math.round((s1+s2+s3+s4)/4);
-    updateGauge(charts.soil1,s1);
-    updateGauge(charts.soil2,s2);
-    updateGauge(charts.soil3,s3);
-    updateGauge(charts.soil4,s4);
-    updateGauge(charts.avg,avg);
+    // Ambil data suhu & kelembapan dari Firebase (field baru)
+    suhuEl.textContent = `${d.temperature || '--'} °C`;
+    kelembapanEl.textContent = `${d.humidity || '--'} %`;
 
-    const pump=(d.pompa||'OFF').toUpperCase();
-    const mode=(d.mode||'AUTO').toUpperCase();
-    pumpStatusEl.textContent=pump;
-    modeStatusEl.textContent=mode;
+    // Ambil data soil
+    const s1 = +d.soil1 || 0,
+          s2 = +d.soil2 || 0,
+          s3 = +d.soil3 || 0,
+          s4 = +d.soil4 || 0;
+    const avg = Math.round((s1 + s2 + s3 + s4) / 4);
 
-    btnPump.innerHTML=`<i class="fa-solid fa-faucet"></i> Pompa: ${pump}`;
-    btnMode.innerHTML=`<i class="fa-solid fa-gear"></i> Mode: ${mode}`;
-    btnPump.className='btn '+(pump==='ON'?'pump-on':'pump-off');
-    btnMode.className='btn '+(mode==='AUTO'?'mode-auto':'mode-manual');
-    btnPump.disabled=(mode==='AUTO');
+    // Update gauge
+    updateGauge(charts.soil1, s1);
+    updateGauge(charts.soil2, s2);
+    updateGauge(charts.soil3, s3);
+    updateGauge(charts.soil4, s4);
+    updateGauge(charts.avg, avg);
+
+    // Status pompa & mode
+    const pump = (d.pompa || 'OFF').toUpperCase();
+    const mode = (d.mode || 'AUTO').toUpperCase();
+
+    pumpStatusEl.textContent = pump;
+    modeStatusEl.textContent = mode;
+
+    // Tombol status
+    btnPump.innerHTML = `<i class="fa-solid fa-faucet"></i> Pompa: ${pump}`;
+    btnMode.innerHTML = `<i class="fa-solid fa-gear"></i> Mode: ${mode}`;
+    btnPump.className = 'btn ' + (pump === 'ON' ? 'pump-on' : 'pump-off');
+    btnMode.className = 'btn ' + (mode === 'AUTO' ? 'mode-auto' : 'mode-manual');
+    btnPump.disabled = (mode === 'AUTO');
   });
 }
+
 
 /* === Kontrol Pompa & Mode === */
 btnPump.onclick=()=>{
@@ -433,4 +446,5 @@ auth.onAuthStateChanged(u=>{
 </script>
 </body>
 </html>
+
 
