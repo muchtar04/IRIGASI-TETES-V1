@@ -405,7 +405,7 @@ function startRealtime() {
     updateGauge(charts.avg, avg);
 
     // Status pompa & mode
-    const pump = (d.pompa || 'OFF').toUpperCase();
+    const pump = (d.pump === 1 ? 'ON' : 'OFF');
     const mode = (d.mode || 'AUTO').toUpperCase();
 
     pumpStatusEl.textContent = pump;
@@ -423,9 +423,10 @@ function startRealtime() {
 
 /* === Kontrol Pompa & Mode === */
 btnPump.onclick=()=>{
-  if(btnPump.disabled) return;
-  const newState=pumpStatusEl.textContent==='ON'?'OFF':'ON';
-  db.ref('SensorData/pompa').set(newState);
+  btnPump.onclick = () => {
+  if (btnPump.disabled) return;
+  const newState = pumpStatusEl.textContent === 'ON' ? 0 : 1;
+  db.ref('SensorData/pump').set(newState);
 };
 btnMode.onclick=()=>{
   const newMode=modeStatusEl.textContent==='AUTO'?'MANUAL':'AUTO';
@@ -446,5 +447,6 @@ auth.onAuthStateChanged(u=>{
 </script>
 </body>
 </html>
+
 
 
