@@ -13,23 +13,27 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <style>
-    :root {
+     :root {
       --bg:#f3f6f7;
-      --card:#15161a;
-      --muted:#aab3b6;
+      --card:#e3e5e6;          /* PATCH: warna card diubah jadi abu terang */
+      --muted:#6a7073;
       --accent:#2ecc71;
       --accent-2:#ffb86b;
       --danger:#ff6b6b;
       --text:#111;
+      --card-border:#c9cdcf;   /* border abu */
     }
+
     :root[data-theme="dark"] {
       --bg:#060607;
-      --card:#0f0f10;
+      --card:#2b2c2e;          /* PATCH: card dark → abu gelap */
       --muted:#9aa6a9;
       --text:#e6f6ea;
+      --card-border:#45484a;   /* border dark mode */
     }
 
     * {box-sizing:border-box; transition: all 0.35s ease-in-out;}
+
     body {
       margin:0;
       font-family:Inter,"Poppins",system-ui,Arial;
@@ -51,51 +55,49 @@
     }
 
     .title {
-      display:inline-block;
-      padding:10px 22px;
-      border-radius:10px;
-      background:#0b0b0b;
-      color:#bff2c9;
       font-weight:700;
-      transition: all 0.4s ease;
+      color:var(--text);
+      font-size:22px;
     }
 
+
+    /* === THEME TOGGLE BUTTON === */
     #themeToggle {
       position:absolute;
       top:10px;
       right:10px;
       background:var(--card);
       color:var(--muted);
-      border:none;
+      border:1px solid var(--card-border);
       border-radius:50%;
-      width:30px;
-      height:30px;
+      width:25px;
+      height:25px;
       cursor:pointer;
       display:flex;
       align-items:center;
       justify-content:center;
-      transition:0.3s;
     }
-    #themeToggle:hover {background:#2a2a2d; color:#fff;}
 
+    /* GRID */
     .grid {
       display:grid;
       grid-template-columns:repeat(4,1fr);
       gap:16px;
     }
 
+    /* === CARD KECIL === */
     .small-card {
-      background:linear-gradient(180deg,#111214,#151619);
-      color:#fff;
+      background:var(--card);
+      border:1.6px solid var(--card-border); /* PATCH border */
       border-radius:14px;
       padding:14px;
       text-align:center;
-      box-shadow:0 4px 16px rgba(0,0,0,0.25);
+      color:var(--text);
     }
-
     .small-card .label {color:var(--muted); font-size:13px; margin-bottom:6px;}
     .small-card .value {font-weight:800; font-size:18px;}
 
+    /* === SOIL GRID === */
     .soil-grid {
       grid-column:1 / span 2;
       display:grid;
@@ -103,43 +105,51 @@
       gap:16px;
     }
 
+    /* === SOIL CARD === */
     .soil-card {
-      background:linear-gradient(180deg,#0f0f10,#161617);
+      background:var(--card);
+      border:1.6px solid var(--card-border); /* PATCH */
       border-radius:16px;
       padding:16px;
-      color:#fff;
       text-align:center;
-      box-shadow:0 4px 16px rgba(0,0,0,0.3);
+      color:var(--text);
     }
-    .soil-card h4 {margin:0 0 10px 0; color:var(--muted); font-weight:600;}
-    canvas {width:100% !important; height:auto !important; max-width:320px; margin:0 auto; display:block;}
+    .soil-card h4 {margin:0 0 10px 0; color:var(--muted);}
 
+    canvas {
+      width:100%!important;
+      height:auto!important;
+      max-width:320px;
+      display:block;
+      margin:0 auto;
+    }
+
+    /* === AVG CARD === */
     .avg-card {
       grid-column:3 / span 2;
-      background:linear-gradient(180deg,#0f0f10,#151616);
+      background:var(--card);
+      border:1.6px solid var(--card-border); /* PATCH */
       border-radius:16px;
       padding:20px;
+      text-align:center;
+      min-height:300px;
       display:flex;
       flex-direction:column;
-      align-items:center;
       justify-content:center;
-      box-shadow:0 4px 18px rgba(0,0,0,0.3);
-      min-height:300px;
     }
     .avg-card h3 {
       margin-bottom:12px;
-      font-size:1.1rem;
       font-weight:700;
-      color:#bff2c9;
-      text-align:center;
+      color:var(--muted);
     }
 
+    /* === BUTTON CONTROL === */
     .controls {
       grid-column:1 / -1;
       display:flex;
       justify-content:center;
-      flex-wrap:wrap;
       gap:12px;
+      flex-wrap:wrap;
       margin-top:14px;
     }
 
@@ -150,16 +160,16 @@
       cursor:pointer;
       font-weight:700;
       color:#fff;
-      box-shadow:0 4px 14px rgba(0,0,0,0.25);
-      transition: all 0.3s ease;
     }
-    .btn:hover {transform:scale(1.05);}
+
     .pump-on{background:var(--accent);}
-    .pump-off{background:#525252;}
+    .pump-off{background:#5b5c5d;}
     .mode-auto{background:#ef7d1a;}
     .mode-manual{background:#1976d2;}
     .logout{background:#6b7280;}
-    .btn:disabled{opacity:0.5; cursor:not-allowed;}
+    .btn:disabled{opacity:0.5;}
+
+
 
     footer {margin-top:20px; text-align:center; color:#888; font-size:13px;}
 
@@ -284,6 +294,7 @@
 </div>
 
 <script>
+
 /* === Tema Otomatis + Manual === */
 const root=document.documentElement;
 const themeBtn=document.getElementById('themeToggle');
@@ -299,7 +310,12 @@ function autoTheme(){
 }
 const savedTheme=localStorage.getItem('theme');
 if(savedTheme){setTheme(savedTheme);}else{autoTheme();}
-themeBtn.onclick=()=>{setTheme(root.dataset.theme==='dark'?'light':'dark');};
+themeBtn.onclick = () => {
+  setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+
+  // refresh semua gauge supaya warna teks berubah
+  Object.values(charts).forEach(ch => ch.update());
+};
 
 /* === Firebase === */
 const firebaseConfig={
@@ -330,30 +346,48 @@ const loginBox=document.getElementById('login-box'),
       btnMode=document.getElementById('btnMode');
 
 /* === Chart.js Plugin === */
-const centerTextPlugin={id:'centerText',afterDraw(chart){
-  const {ctx,chartArea:{width,height}}=chart;
-  const v=chart.data.datasets[0].data[0];
-  ctx.save();
-  ctx.font=`600 ${height/10}px Inter`;
-  ctx.fillStyle='#dff6e6';
-  ctx.textAlign='center';
-  ctx.textBaseline='middle';
-  ctx.fillText(`${v}%`,width/2,height/2);
-  ctx.restore();
-}};
-const edgeLabelPlugin={id:'edgeLabel',afterDraw(chart){
-  const {ctx,chartArea:{width,height}}=chart;
-  const x=width/2,y=height/2;
-  const r=chart._metasets[0].data[0].outerRadius;
-  ctx.save();
-  ctx.fillStyle='#aab3b6';
-  ctx.font='bold 12px Inter';
-  const a1=(chart.options.rotation-90)*Math.PI/180;
-  const a2=(chart.options.rotation+chart.options.circumference-90)*Math.PI/180;
-  ctx.fillText('0',x+Math.cos(a1)*(r+25),y+Math.sin(a1)*(r+25));
-  ctx.fillText('100',x+Math.cos(a2)*(r+25),y+Math.sin(a2)*(r+25));
-  ctx.restore();
-}};
+const centerTextPlugin = {
+  id: 'centerText',
+  afterDraw(chart) {
+    const { ctx, chartArea: { width, height } } = chart;
+    const v = chart.data.datasets[0].data[0];
+
+    // warna otomatis berdasarkan theme
+    const color = (root.dataset.theme === 'light') ? '#111' : '#dff6e6';
+
+    ctx.save();
+    ctx.font = `600 ${height / 10}px Inter`;
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${v}%`, width / 2, height / 2);
+    ctx.restore();
+  }
+};
+
+const edgeLabelPlugin = {
+  id: 'edgeLabel',
+  afterDraw(chart) {
+    const { ctx, chartArea: { width, height } } = chart;
+    const x = width / 2,
+          y = height / 2;
+    const r = chart._metasets[0].data[0].outerRadius;
+
+    // warna otomatis mode terang/gelap
+    const color = (root.dataset.theme === 'light') ? '#111' : '#aab3b6';
+
+    ctx.save();
+    ctx.fillStyle = color;
+    ctx.font = 'bold 12px Inter';
+
+    const a1 = (chart.options.rotation - 90) * Math.PI / 180;
+    const a2 = (chart.options.rotation + chart.options.circumference - 90) * Math.PI / 180;
+
+    ctx.fillText('0',   x + Math.cos(a1) * (r + 25), y + Math.sin(a1) * (r + 25));
+    ctx.fillText('100', x + Math.cos(a2) * (r + 25), y + Math.sin(a2) * (r + 25));
+    ctx.restore();
+  }
+};
 
 /* === Gauge Setup === */
 function getColor(v){return v>70?'#2ecc71':v>40?'#ffb86b':'#ff6b6b';}
@@ -447,7 +481,6 @@ auth.onAuthStateChanged(u=>{
 </script>
 </body>
 </html>
-
 
 
 
