@@ -223,19 +223,24 @@
 
     /* RESPONSIVE UNTUK HP */
 	@media (max-width:480px){
+		
+	/* ATUR URUTAN ELEMEN DI DALAM GRID */
+	.grid > .small-card:nth-child(1){order:1;} /* Suhu */
+	.grid > .small-card:nth-child(2){order:2;} /* Kelembapan */
+	.grid > .small-card:nth-child(3){order:3;} /* Pompa */
+	.grid > .small-card:nth-child(4){order:4;} /* Mode */
+
+	.grid > .soil-grid{order:5;}  /* Grup Soil 1–4 */
+	.grid > .avg-card{order:6;}   /* Rata-rata Soil → DI BAWAH Soil-grid */
+
+	.grid > .controls{order:7;}   /* Tombol */
+
   	body{font-size:15px; overflow-y:auto;}
   	.page{padding:12px;}
   	.grid{display:flex; flex-direction:column; align-items:center; gap:12px;}
   	.small-card{width:90%; max-width:360px;}
   	.soil-grid{display:flex; flex-direction:column; align-items:center; gap:12px; width:100%;}
   	.soil-card{width:90%; max-width:360px;}
-
-  	/* ⚠️ TAMBAHKAN BAGIAN INI AGAR AVG SOIL BERADA DI BAWAH SOIL 4 */
-  	.soil-grid .soil-card:nth-child(1){order:1;}
-  	.soil-grid .soil-card:nth-child(2){order:2;}
-  	.soil-grid .soil-card:nth-child(3){order:3;}
-  	.soil-grid .soil-card:nth-child(4){order:4;}
-  	.avg-card{order:5;} /* ← POSISI RATA-RATA SOIL */
 
   	.avg-card{
     	width:90%; max-width:360px; min-height:240px;
@@ -490,6 +495,7 @@ auth.onAuthStateChanged(u=>{
 </script>
 </body>
 </html>
+
 
 
 
